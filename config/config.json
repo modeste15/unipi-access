@@ -1,0 +1,19 @@
+{
+    "development": {
+        "username": "root",
+        "password": null,
+        "database": "unipi",
+        "host": "localhost",
+        "dialect": "sqlite",
+        "storage": "./data/database.sqlite"
+    },
+
+    "production": {
+        "username": "",
+        "password": null,
+        "database": "unipi",
+        "host": "localhost",
+        "dialect": "sqlite",
+        "storage": "./data/database.sqlite"
+    }
+}
