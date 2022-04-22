@@ -7,55 +7,8 @@
 <html class="ie ie8" lang="en"> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!-->
 <html lang="en"> <!--<![endif]-->
-<head>
+    <%- include('../partials/head'); %>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Engenys</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <!-- Favicons
-    ================================================== -->
-    <link rel="shortcut icon" href="favicon.ico">
-
-    <!-- CSS
-    ================================================== -->
-    <link rel="stylesheet" type="text/css" href="/js/jquery/jquery.mobile-1.4.5.min.css"/>
-
-    <!-- Javascript
-    ================================================== -->
-    <script rel="javascript" type="text/javascript" src="js/jquery/jquery-2.1.1.min.js"></script>
-    <script rel="javascript" type="text/javascript" src="js/jquery/jquery.mobile-1.4.5.min.js"></script>
-    <script rel="javascript" type="text/javascript" src="js/init.js"></script>
-    <script rel="javascript" type="text/javascript" src="js/main.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            webSocketRegister();
-            updateValues();
-        });
-    </script>
-    <style>
-        .cmax8 {
-            max-width: 1100px;
-            margin-left: auto;
-            margin-right: auto;
-            position: static;
-            padding-left:0;
-            padding-right:0;
-        }
-        .menu {
-            display: flex;
-        }
-        .menu {
-            display: flex !important;
-        }
-        .ui-grid-a > .ui-block-a, .ui-grid-a > .ui-block-b {
-                width: 11% !important;
-            }
-    </style>
-
-</head>
 <body>
 
 
@@ -103,34 +56,36 @@
         <!-- /outputs -->
         
         <div id="networks" class="ui-content" data-inset="true">
-            <form id="formNetwork" method="post">
+            <form action="/update-ini" id="formNetwork" method="post">
                 <div class="ui-field-contain">
-                    <label  for="dhcp">DHCP</label>
-                    <input  class="" type="checkbox" name="dhcp" id="dhcp">
+                    <label for="dhcp">DHCP</label>
+                    <input type="checkbox" name="dhcp" id="dhcp"> 
                 </div>
-                <div class="ui-field-contain">
-                    <label  for="ip">Ip</label>
-                    <input  type="text" name="hostname" id="">
-                </div>
-                <div class="ui-field-contain">
-                    <label for="mask">Mask</label>
-                    <input type="text" name="mask"  id="mask">  
-                </div>
-                <div class="ui-field-contain">
-                    <label for="gateway">Gateway</label>
-                    <input type="text" name="gateway"  id="gateway">
-                </div>
-                <div class="ui-field-contain">
-                    <label for="gateway">Ip Server</label>
-                    <input type="text" name="server"  id="gateway">
-                </div>
-                <div class="ui-field-contain">
-                    <label for="dns1">DNS 1</label>
-                    <input type="text"   id="dns1">
-                </div>
-                <div class="ui-field-contain">
-                    <label for="dns2">DNS 2</label>
-                    <input type="text"   id="dns2">
+                <div class="form-input">
+                    <div class="ui-field-contain ">
+                        <label  for="ip">Ip</label>
+                        <input  type="text" name="hostname" pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" class="network-input"   value="<%= (hostname) ? hostname : 'error' %> ">
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="mask">Mask</label>
+                        <input type="text" name="mask"  class="network-input" value="<%= (masque) ? masque : 'error' %>" >  
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="gateway">Gateway</label>
+                        <input type="text" name="gateway"  class="network-input" value="<%= (passerelle) ? passerelle : 'error' %>">
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="gateway">Ip Server</label>
+                        <input type="text" name="server"  class="network-input" value="<%= (ipserveur) ? ipserveur : 'error' %>">
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="dns1">DNS 1</label>
+                        <input type="text"   class="network-input">
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="dns2">DNS 2</label>
+                        <input type="text"   class="network-input">
+                    </div>
                 </div>
 
                 <div>
@@ -169,16 +124,31 @@
       </div>
       <!-- /tabs -->
     </div>
+
     <div data-role="popup" id="unipi_config_form_div">
     	<form id="unipi_config_form">
     		<div style="padding:20px 20px;" class="" id="unipi_config_form_inner_div">
     		</div>
     	</form>
     </div>
-    <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
-        <h1>Engenys</h1>
-    </div>
+    
     <!-- /footer -->
+    <%- include('../partials/footer'); %>
+
+    <script>
+        $('#dhcp').on('click', function(){
+            if ( $(this).is(':checked') ) {
+                $('.form-input').hide();
+                //$('.network-input').attr('disabled','disabled');
+            } 
+            else {
+                $('.form-input').show();
+                //$('.network-input').attr('disabled', false);
+            }
+        });
+
+    </script>
+
 </div>
 
 

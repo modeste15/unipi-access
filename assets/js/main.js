@@ -2,23 +2,7 @@ $.fn.exists = function () {
     return this.length !== 0;
 }
 
-/*
-$(document).ready(function(){
-	$("a").on("click",  function(event) {
 
-		event.stopImmediatePropagation();
-		tmp = true
-		if (tmp ) {
-			window.location.replace("http://192.168.1.22/login.html");
-		} else {
-			$(this).trigger('click');
-		}	
-		
-	}
-	);
-
-});
-*/
 
 
 

@@ -28,12 +28,21 @@ app.use(require("express-session")({
 
 
 
-
+app.use(function (req, res, next) {
+  res.locals.currentUser = req.user;
+  console.log("+=+=+=+=+=+=+")
+  console.log(res.locals.currentUser);
+  console.log("+=+=+=+=+=+=+")
+  console.log(req.user);
+  next();
+})
 app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 
 models.sequelize.sync().then(function() {
@@ -42,14 +51,70 @@ models.sequelize.sync().then(function() {
   console.log(err)
 });
 
-app.listen(3000, () => {
-  console.log("Serveur démarré (http://localhost:3000/) !");
+app.listen(3001, () => {
+  console.log("Serveur démarré (http://localhost:3001/) !");
 });
 
 
-app.get('/', function(req, res) {
-  res.render('pages/index');
+passport.serializeUser(function(req, user, done) {
+  done(null, user);
 });
+
+passport.deserializeUser(function(user, done) {
+      return done(null, user);
+});
+
+passport.use( new LocalStrategy(function(username, password, done) {
+
+  User.findOne( { where: { login: username} }).then( function (user, err) {
+      bcrypt.compare(password, user.password).then(  function (valid, err) { 
+
+
+        if (valid) {
+          return done(null, user);
+        } else {
+          return done(null, false, { message: 'Incorrect password' });
+        }
+      });
+    }).catch(function(err) {
+      return done(null, false, { message: 'Incorrect username' });
+    });
+
+}));
+
+
+
+
+
+app.post('/', passport.authenticate('local', { successRedirect: '/success',
+                                                    failureRedirect: '/error' }));
+
+
+
+
+app.get('/', (req, res) => {
+  res.render('pages/login');
+});
+
+app.get('/success', (req, res) => {
+  res.redirect('/home');
+});
+
+
+
+app.get('/home', (req, res) => {
+  
+  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+
+  res.render('pages/index',{
+    hostname: config.Config.hostname,
+    masque: config.Config.masque,
+    passerelle: config.Config.passerelle,
+    ipserveur: config.Config.ipserveur,
+  });
+});
+
+
 
 app.get("/init", async (req, res) => {
 
@@ -75,7 +140,6 @@ app.get("/init", async (req, res) => {
 });
 
 
-
 app.get("/all", async (req, res) => {
   User.findAll().then(function(users){
     console.log(users);
@@ -94,40 +158,19 @@ app.get("/error", async (req, res) => {
 });
 
 
-
-
-app.post("/login", async (req, res) => {
-
-  const body = req.body;
-
-  const user = await User.findOne( { where: { login: body.username} });
-
-
-  if (user) {
-    // check user password with hashed password stored in the database
-    const validPassword = await bcrypt.compare(body.password, user.password);
-    if (validPassword) {
-      res.status(200).json({ message: "Valid password", user: user  });
-    } else {
-      res.status(400).json({ error: "Invalid Password" });
-    }
-  } else {
-    res.status(401).json({ error: "User does not exist" });
-  }
-});
-
-
-
-
 app.post("/update-ini", async (req, res) => {
 
   const body = req.body;
 
   var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
 
-  config.Config.hostname = body.hostname
-  config.Config.masque = body.mask
-  config.Config.passerelle = body.gateway
+  if (!body.dhcp) {
+    config.Config.hostname = body.hostname
+    config.Config.masque = body.mask
+    config.Config.passerelle = body.gateway  
+  } else {
+    config.Config.passerelle = body.dhcp   
+  }
 
 
   fs.writeFileSync('./test.ini', ini.stringify(config))
@@ -135,84 +178,3 @@ app.post("/update-ini", async (req, res) => {
   res.status(200).json({ test: "success" });
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ where: { login: body.login} }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (!user.verifyPassword(password)) { return done(null, false); }
-      return done(null, user);
-    });
-  }
-));
-*/
-
-
-  
-
-
-
-
-/*
-
-passport.use( new LocalStrategy(function(username, password, done) {
-  console.log("***********");
-  console.log(username);
-
-  console.log("***********");
-  console.log(password);
-  
-  User.findOne( { where: { login: username} }).then( function (user, err) {
-      bcrypt.compare(password, user.password).then(  function (valid, err) { 
-        console.log("**********")
-        console.log(valid)
-
-        if (valid) {
-          return done(null, user);
-        } else {
-          return done(null, false, { message: 'Incorrect password' });
-        }
-      });
-    }).catch(function(err) {
-      return done(null, false, { message: 'Incorrect username' });
-    });
-
-}));
-
-
-passport.serializeUser(function(user, done) {
-  return done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findOne( { where: { id: id} }).then( function (user, err) {
-    if (!user) return done(null, false);
-    return done(null, user);
-  });
-});
-
-// ...
-
-app.post('/login', passport.authenticate('local', { successRedirect: '/user',
-                                                    failureRedirect: '/error' }));
-*/
