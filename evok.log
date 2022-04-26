@@ -1,0 +1,14 @@
+2022-04-24 18:09:02,110 - evok - INFO - Starting using config file /opt/evok/lib/python2.7/site-packages/evok/evok.conf
+2022-04-24 18:09:02,187 - evok - INFO - YAML Definition loaded: /etc/hw_definitions/BuiltIn/S107.yaml, type: UniPiBuiltIn
+2022-04-24 18:09:02,209 - evok - INFO - YAML Definition loaded: CUSTOM_MODBUS_DEVICE.yaml, type: 3, definition count 0
+2022-04-24 18:09:02,275 - evok - INFO - YAML Definition loaded: IAQ.yaml, type: 3, definition count 1
+2022-04-24 18:09:02,301 - evok - INFO - YAML Definition loaded: xG18.yaml, type: 3, definition count 2
+2022-04-24 18:09:02,348 - evok - INFO - YAML Definition loaded: xS10.yaml, type: 3, definition count 3
+2022-04-24 18:09:02,395 - evok - INFO - YAML Definition loaded: xS11.yaml, type: 3, definition count 4
+2022-04-24 18:09:02,444 - evok - INFO - YAML Definition loaded: xS30.yaml, type: 3, definition count 5
+2022-04-24 18:09:02,494 - evok - INFO - YAML Definition loaded: xS40.yaml, type: 3, definition count 6
+2022-04-24 18:09:02,558 - evok - INFO - YAML Definition loaded: xS50.yaml, type: 3, definition count 7
+2022-04-24 18:09:02,619 - evok - INFO - YAML Definition loaded: xS51.yaml, type: 3, definition count 8
+2022-04-24 18:09:02,627 - evok - INFO - YAML Definition loaded: evok-alias.yaml, type: 2, definition count 0
+2022-04-24 18:09:02,655 - evok - INFO - HTTP server listening on port: 8080
+2022-04-24 18:09:15,460 - evok - INFO - Shutting down

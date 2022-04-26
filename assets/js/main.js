@@ -944,13 +944,13 @@ function syncDevice(msg) {
             var divider = document.getElementById("unipi_temp_divider");
             var list = document.getElementById("inputs_list");
             list.insertBefore(li, divider);
-            $('#inputs_list').listview('refresh');
+            $('#inputs_list').listview().listview('refresh');
         	break;
         }
         case "ao": {
             $('#outputs_list').append(li);
             $('#' + main_el.id).slider();
-            $('#outputs_list').listview('refresh');
+            $('#outputs_list').listview().listview('refresh');
             $('#' + main_el.id).bind("slidestop", function (event, ui) {
                 makePostRequest('ao/' + circuit, 'value=' + $(this).val());
             });
@@ -962,7 +962,7 @@ function syncDevice(msg) {
             var list = document.getElementById("outputs_list");
             list.insertBefore(li, divider);
             $('#' + main_el.id).flipswitch();
-            $('#outputs_list').listview('refresh');
+            $('#outputs_list').listview().listview('refresh');
             $('#' + main_el.id).bind("change", function (event, ui) {
                 makePostRequest('led/' + circuit, 'value=' + $(this).val());
             });
@@ -976,7 +976,7 @@ function syncDevice(msg) {
             var list = document.getElementById("outputs_list");
             list.insertBefore(li, divider);
             $('#' + main_el.id).flipswitch();
-            $('#outputs_list').listview('refresh');
+            $('#outputs_list').listview().listview('refresh');
             $('#' + main_el.id).bind("change", function (event, ui) {
             	$.postJSON('relay/' + circuit, {value: $(this).val})
             });
@@ -986,7 +986,7 @@ function syncDevice(msg) {
             var divider = document.getElementById("unipi_ai_divider");
             var list = document.getElementById("inputs_list");
             list.insertBefore(li, divider);
-            $('#inputs_list').listview('refresh');
+            $('#inputs_list').listview().listview('refresh');
         	break;        	
         }
         case "1wdevice": {}
@@ -994,45 +994,45 @@ function syncDevice(msg) {
             var divider = document.getElementById("unipi_modbus_divider");
             var list = document.getElementById("inputs_list");
             list.insertBefore(li, divider);
-            $('#inputs_list').listview('refresh');
+            $('#inputs_list').listview().listview('refresh');
         	break;       	
         }
         case "unit_register": {
             $('#inputs_list').append(li);
-            $('#inputs_list').listview('refresh');
+            $('#inputs_list').listview().listview('refresh');
         	break;       	
         }
         case "neuron": {
             var divider = document.getElementById("unipi_uart_divider");
             var list = document.getElementById("system_list");
             list.insertBefore(li, divider);
-            $('#system_list').listview('refresh');
+            $('#system_list').listview().listview('refresh');
         	break;        	
         }
         case "extension": {
             $('#system_list').append(li);
-            $('#system_list').listview('refresh');
+            $('#system_list').listview().listview('refresh');
         	break;
         }
         case "uart": {
             var divider = document.getElementById("unipi_watchdog_divider");
             var list = document.getElementById("system_list");
             list.insertBefore(li, divider);
-            $('#system_list').listview('refresh'); 
+            $('#system_list').listview().listview('refresh'); 
         	break;        	
         }
         case "wd": {
             var divider = document.getElementById("unipi_wifi_divider");
             var list = document.getElementById("system_list");
             list.insertBefore(li, divider);
-        	$('#system_list').listview('refresh');
+        	$('#system_list').listview().listview('refresh');
         	break;        	
         }
         case "wifi": {
             var divider = document.getElementById("unipi_extension_divider");
             var list = document.getElementById("system_list");
             list.insertBefore(li, divider);
-            $('#system_list').listview('refresh'); 
+            $('#system_list').listview().listview('refresh'); 
         	break;
         }
         case "light_channel": {
@@ -1041,7 +1041,7 @@ function syncDevice(msg) {
             var list = document.getElementById("outputs_list");
             list.insertBefore(li, divider);
             $('#' + main_el.id).slider();
-        	$('#outputs_list').listview('refresh');
+        	$('#outputs_list').listview().listview('refresh');
             $('#' + main_el.id).bind("slidestop", function (event, ui) {
                 makePostRequest('light_channel/' + circuit, 'broadcast_command=DAPC&broadcast_argument=' + $(this).val());
             });
