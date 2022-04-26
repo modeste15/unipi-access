@@ -7,268 +7,156 @@
 <html class="ie ie8" lang="en"> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!-->
 <html lang="en"> <!--<![endif]-->
-<head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Engenys</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <!-- Favicons
-    ================================================== -->
-    <link rel="shortcut icon" href="/assets/favicon.ico">
-
-    <!-- CSS
-    ================================================== -->
-    <link rel="stylesheet" type="text/css" href="/js/jquery/jquery.mobile-1.4.5.min.css"/>
-
     
-    <style>
-        .info {
-            text-align: right;
-        }
-        .ui-page-header-fixed {
-            padding-top: 10px !important;
-        }
-        .cmax8 {
-            max-width: 1100px;
-            margin-left: auto;
-            margin-right: auto;
-            position: static;
-            padding-left:0;
-            padding-right:0;
-        }
-        .menu {
-            display: flex;
-        }
-        .menu {
-            display: flex !important;
-        }
-        .ui-grid-a > .ui-block-a, .ui-grid-a > .ui-block-b {
-                width: 11% !important;
-        }
-        input[type="text"]:disabled {
-            background: #e9e9e9;
-        }
-    </style>
+<%- include('../partials/head'); %>
 
-</head>
 <body>
 
-
-<!-- OVERVIEW page -->
-<div data-role="page" id="page-overview">
-    <div class="cmax8 info">
-        <h4 style="margin: 0px;">  
-            <%= user %>
-        </h3>
-        <div class="date"></div>
-        <div class="digital-clock">00:00:00</div>
-    </div>
-
-    <div data-role="header"  class="cmax8" data-id="pageHeader" data-position="fixed">
-        <h2>Engenys Control Panel</h2>
-		<img src="/js/jquery/images/spinner.svg" class="ui-btn-right" id="unipi_loading_spinner" style="max-height: 80%;visibility: hidden;"/>
-    </div>
-    <div data-role="main" class="ui-content cmax8">
-      <div data-role="tabs" >
-        <div data-role="navbar">
-            
-            <ul class="menu">
-                <%if (admin) { %>
-                    <li><a href="#inputs" id="m-input" data-theme="a" data-ajax="false" class="ui-btn-active">Inputs</a></li>
-                    <li><a href="#configs" id="m-operator" data-theme="a" data-ajax="false">Operator</a></li>
-                    <li><a href="#system" id="m-system" data-theme="a" data-ajax="false">System</a></li>
-                    <li><a href="#configs" id="m-config" data-theme="a" data-ajax="false">Configuration</a></li>
-                <% } %>
-
-                <li><a href="#outputs" id="m-output" data-theme="a" data-ajax="false">Outputs</a></li>                
-                <li><a href="#networks" id="m-network" data-theme="a" data-ajax="false">Network</a></li>
-                <li><a href="#readers" id="m-reader" data-theme="a" data-ajax="false">Reader</a></li>
-                <li><a href="#configs" id="m-datetime" data-theme="a" data-ajax="false">Datetime</a></li>
-                <li><a href="#log" id="m-log" data-theme="a" data-ajax="false">Log</a></li>
-
-
-            </ul>
+    <!-- OVERVIEW page -->
+    <div data-role="page" id="page-overview">
+        <div class="cmax8 info">
+            <h4 style="margin: 0px;">  
+                <%= user %>
+            </h3>
+            <div class="date"></div>
+            <div class="digital-clock">00:00:00</div>
         </div>
-        
-        <%if (admin) { %>
-            <div id="inputs" class="ui-content" data-inset="true">
-                <ul data-role="listview" id="inputs_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
-                    <li data-role="list-divider" data-theme="a" id="unipi_input_divider">Digital</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_ai_divider">Analog</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_temp_divider">1Wire Sensors/Devices</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_modbus_divider">Modbus extensions</li>
+
+        <div data-role="header"  class="cmax8" data-id="pageHeader" data-position="fixed">
+            <h2>Engenys Control Panel</h2>
+            <img src="/js/jquery/images/spinner.svg" class="ui-btn-right" id="unipi_loading_spinner" style="max-height: 80%;visibility: hidden;"/>
+        </div>
+        <div data-role="main" class="ui-content cmax8">
+        <div data-role="tabs" >
+            <div data-role="navbar">
+                
+                <ul class="menu">
+                    <%if (admin) { %>
+                        <li><a href="#inputs" id="m-input" data-theme="a" data-ajax="false" class="ui-btn-active">Inputs</a></li>
+                        <li><a href="#operator" id="m-operator" data-theme="a" data-ajax="false">Operator</a></li>
+                        <li><a href="#system" id="m-system" data-theme="a" data-ajax="false">System</a></li>
+                        <li><a href="#configs" id="m-config" data-theme="a" data-ajax="false">Configuration</a></li>
+                    <% } %>
+
+                    <li><a href="#outputs" id="m-output" data-theme="a" data-ajax="false">Outputs</a></li>                
+                    <li><a href="#networks" id="m-network" data-theme="a" data-ajax="false">Network</a></li>
+                    <li><a href="#readers" id="m-reader" data-theme="a" data-ajax="false">Reader</a></li>
+                    <li><a href="#datetime" id="m-datetime" data-theme="a" data-ajax="false">Datetime</a></li>
+                    <li><a href="#log" id="m-log" data-theme="a" data-ajax="false">Log</a></li>
+
+
                 </ul>
             </div>
-            <!-- /inputs -->
-
-            <div id="system" class="ui-content" data-inset="true">
-                <ul data-role="listview" id="system_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
-                    <li data-role="list-divider" data-theme="a" id="unipi_neuron_divider">Devices</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_uart_divider">UART</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_watchdog_divider">Watchdog</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_wifi_divider">WiFi Adapters</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_extension_divider">Extensions</li>
-                </ul>
-            </div>
-            <!-- /system -->
             
-            <div id="configs" class="ui-content" data-inset="true">
-                <div id="unipi_save_all_button_div">
-                    <button class="ui-btn ui-corner-all" id="unipi_save_all_button">Save current state to Flash</button>
+            <%if (admin) { %>
+                <div id="inputs" class="ui-content" data-inset="true">
+                    <ul data-role="listview" id="inputs_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
+                        <li data-role="list-divider" data-theme="a" id="unipi_input_divider">Digital</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_ai_divider">Analog</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_temp_divider">1Wire Sensors/Devices</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_modbus_divider">Modbus extensions</li>
+                    </ul>
                 </div>
+                <!-- /inputs -->
+
+
+                <div id="operator" class="ui-content" data-inset="true">
+                    operator
+                </div>
+
+                <div id="system" class="ui-content" data-inset="true">
+                    <ul data-role="listview" id="system_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
+                        <li data-role="list-divider" data-theme="a" id="unipi_neuron_divider">Devices</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_uart_divider">UART</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_watchdog_divider">Watchdog</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_wifi_divider">WiFi Adapters</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_extension_divider">Extensions</li>
+                    </ul>
+                </div>
+                <!-- /system -->
+                
+                <div id="configs" class="ui-content" data-inset="true">
+                    <div id="unipi_save_all_button_div">
+                        <button class="ui-btn ui-corner-all" id="unipi_save_all_button">Save current state to Flash</button>
+                    </div>
+                </div>
+                <!-- /configs -->
+
+            <% } %>
+                <div id="outputs" class="ui-content" data-inset="true">
+                    <ul data-role="listview" id="outputs_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
+                        <li data-role="list-divider" data-theme="a" id="unipi_light_channel_divider" style="display: none;">DALI Channels</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_digital_divider">Digital</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_relay_divider">Relays</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_led_divider">LEDs</li>
+                        <li data-role="list-divider" data-theme="a" id="unipi_ao_divider">Analog</li>
+                    </ul>
+                </div>
+                <!-- /outputs -->
+            
+            <div id="networks" class="ui-content" data-inset="true">
+                <form action="/update-ini" id="formNetwork" method="post">
+                    <div class="ui-field-contain">
+                        <label for="dhcp">DHCP</label>
+                        <input type="checkbox" name="dhcp" id="dhcp"> 
+                    </div>
+                    <div class="form-input">
+                        <div class="ui-field-contain ">
+                            <label  for="ip">Ip</label>
+                            <input  type="text" name="hostname" pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" class="network-input"   value="<%= (hostname) ? hostname : 'error' %> ">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="mask">Mask</label>
+                            <input type="text" name="mask"  class="network-input" value="<%= (masque) ? masque : 'error' %>" >  
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="gateway">Gateway</label>
+                            <input type="text" name="gateway"  class="network-input" value="<%= (passerelle) ? passerelle : 'error' %>">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="gateway">Ip Server</label>
+                            <input type="text" name="server"  class="network-input" value="<%= (ipserveur) ? ipserveur : 'error' %>">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="dns1">DNS 1</label>
+                            <input type="text"   class="network-input">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="dns2">DNS 2</label>
+                            <input type="text"   class="network-input">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                    </div>
+                </form>
+
             </div>
-            <!-- /configs -->
 
-        <% } %>
-            <div id="outputs" class="ui-content" data-inset="true">
-                <ul data-role="listview" id="outputs_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
-                    <li data-role="list-divider" data-theme="a" id="unipi_light_channel_divider" style="display: none;">DALI Channels</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_digital_divider">Digital</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_relay_divider">Relays</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_led_divider">LEDs</li>
-                    <li data-role="list-divider" data-theme="a" id="unipi_ao_divider">Analog</li>
-                </ul>
+            <!--Readers-->
+            <div id="readers" class="ui-content" data-inset="true">
+                <h1>Readers </h1>
+
             </div>
-            <!-- /outputs -->
-        
-        <div id="networks" class="ui-content" data-inset="true">
-            <form action="/update-ini" id="formNetwork" method="post">
-                <div class="ui-field-contain">
-                    <label for="dhcp">DHCP</label>
-                    <input type="checkbox" name="dhcp" id="dhcp"> 
-                </div>
-                <div class="form-input">
-                    <div class="ui-field-contain ">
-                        <label  for="ip">Ip</label>
-                        <input  type="text" name="hostname" pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" class="network-input"   value="<%= (hostname) ? hostname : 'error' %> ">
-                    </div>
-                    <div class="ui-field-contain">
-                        <label for="mask">Mask</label>
-                        <input type="text" name="mask"  class="network-input" value="<%= (masque) ? masque : 'error' %>" >  
-                    </div>
-                    <div class="ui-field-contain">
-                        <label for="gateway">Gateway</label>
-                        <input type="text" name="gateway"  class="network-input" value="<%= (passerelle) ? passerelle : 'error' %>">
-                    </div>
-                    <div class="ui-field-contain">
-                        <label for="gateway">Ip Server</label>
-                        <input type="text" name="server"  class="network-input" value="<%= (ipserveur) ? ipserveur : 'error' %>">
-                    </div>
-                    <div class="ui-field-contain">
-                        <label for="dns1">DNS 1</label>
-                        <input type="text"   class="network-input">
-                    </div>
-                    <div class="ui-field-contain">
-                        <label for="dns2">DNS 2</label>
-                        <input type="text"   class="network-input">
-                    </div>
-                </div>
+            <!--Readers-->
 
-                <div>
-                    <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
-                </div>
-            </form>
-
+            <div id="log" class="ui-content" data-inset="true">
+                <%= (log) ? log : 'error' %>         
+            </div>
+            
+            <!-- /content -->
         </div>
-
-        <!--Readers-->
-        <div id="readers" class="ui-content" data-inset="true">
-            <h1>Readers </h1>
-
+        <!-- /tabs -->
         </div>
-        <!--Readers-->
-
-        <div id="log" class="ui-content" data-inset="true">
-            <%= (log) ? log : 'error' %>         
-        </div>
-
 
         
-        <!-- /content -->
-      </div>
-      <!-- /tabs -->
+        <!-- /footer -->
+        <%- include('../partials/footer'); %>
+
+
     </div>
 
-    
-    <!-- /footer -->
-    <%- include('../partials/footer'); %>
-
-
-</div>
-
-
-
-
-<!-- Javascript
-    ================================================== -->
-    <script rel="javascript" type="text/javascript" src="js/jquery/jquery-2.1.1.min.js"></script>
-    <script rel="javascript" type="text/javascript" src="js/jquery/jquery.mobile-1.4.5.min.js"></script>
-    <script rel="javascript" type="text/javascript" src="js/main.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            webSocketRegister();
-            updateValues();
-            
-        });
-
-
-        $('#dhcp').on('click', function(){
-            if ( $(this).is(':checked') ) {
-                $('.form-input').hide();
-                //$('.network-input').attr('disabled','disabled');
-            } 
-            else {
-                $('.form-input').show();
-                //$('.network-input').attr('disabled', false);
-            }
-        });
-    
-        $(document).ready(function() {
-            clockUpdate();
-            setInterval(clockUpdate, 1000);
-        })
-    
-        function clockUpdate() {
-            var date = new Date();
-            $('.digital-clock').css({'color': '#000'});
-        
-            function addZero(x) {
-                if (x < 10) {
-                return x = '0' + x;
-                } else {
-                return x;
-            }
-            }
-    
-            function twelveHour(x) {
-                if (x > 12) {
-                return x = x - 12;
-                } else if (x == 0) {
-                return x = 12;
-                } else {
-                return x;
-                }
-            }
-    
-            var h = addZero(twelveHour(date.getHours()));
-            var m = addZero(date.getMinutes());
-            var s = addZero(date.getSeconds());
-    
-            $('.digital-clock').text(h + ':' + m + ':' + s)
-    
-            var dd = String(date.getDate()).padStart(2, '0');
-            var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-            var yyyy = date.getFullYear();
-    
-            today = dd + '/'+mm + '/' + yyyy;
-            $('.date').text(today)
-        }
-    
-    
-    
-    </script>
 </body>
+
 </html>

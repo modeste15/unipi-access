@@ -13,7 +13,72 @@
     <!-- CSS
     ================================================== -->
     <link rel="stylesheet" type="text/css" href="/js/jquery/jquery.mobile-1.4.5.min.css"/>
+<!-- Javascript
+    ================================================== -->
+    <script rel="javascript" type="text/javascript" src="js/jquery/jquery-2.1.1.min.js"></script>
+    <script rel="javascript" type="text/javascript" src="js/jquery/jquery.mobile-1.4.5.min.js"></script>
+    <script rel="javascript" type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            webSocketRegister();
+            updateValues();
+            
+        });
 
+
+        $('#dhcp').on('click', function(){
+            if ( $(this).is(':checked') ) {
+                $('.form-input').hide();
+                //$('.network-input').attr('disabled','disabled');
+            } 
+            else {
+                $('.form-input').show();
+                //$('.network-input').attr('disabled', false);
+            }
+        });
+    
+        $(document).ready(function() {
+            clockUpdate();
+            setInterval(clockUpdate, 1000);
+        })
+    
+        function clockUpdate() {
+            var date = new Date();
+            $('.digital-clock').css({'color': '#000'});
+        
+            function addZero(x) {
+                if (x < 10) {
+                return x = '0' + x;
+                } else {
+                return x;
+            }
+            }
+    
+            function twelveHour(x) {
+                if (x > 12) {
+                return x = x - 12;
+                } else if (x == 0) {
+                return x = 12;
+                } else {
+                return x;
+                }
+            }
+    
+            var h = addZero(twelveHour(date.getHours()));
+            var m = addZero(date.getMinutes());
+            var s = addZero(date.getSeconds());
+    
+            $('.digital-clock').text(h + ':' + m + ':' + s)
+    
+            var dd = String(date.getDate()).padStart(2, '0');
+            var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = date.getFullYear();
+    
+            today = dd + '/'+mm + '/' + yyyy;
+            $('.date').text(today)
+        }
+
+    </script>
     
     <style>
         .info {
