@@ -64,7 +64,7 @@
     </div>
 
     <div class="ui-content cmax8">
-        <form action="/home" method="post">
+        <form action="/login" method="post">
             <div>
                 <label for="">Username</label>
                 <input type="text" name="username" >
@@ -79,9 +79,15 @@
         </form>
     </div>
     
-    <%- include('../partials/footer'); %>
 
     <!-- /footer -->
+    <div data-role="popup" id="unipi_config_form_div">
+        <form id="unipi_config_form">
+            <div style="padding:20px 20px;" class="" id="unipi_config_form_inner_div">
+            </div>
+        </form>
+    </div>
+    
 </div>
 
 </body>

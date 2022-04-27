@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 var User = require("../models/").User;
 var fs = require('fs'), ini = require('ini')
 
+/*
 router.use(function (req, res, next) {
   user = req.session.user;
   if( req.path === '/home' && req.method=== 'GET'  && !user  ) {
@@ -12,13 +13,13 @@ router.use(function (req, res, next) {
   } else {
     next();
   }
-})
+})*/
 
 router.get('/', (req, res) => {
   res.render('pages/login');
 });
 
-router.post("/home", async (req, res) => {
+router.post("/login", async (req, res) => {
 
   const body = req.body;
 
@@ -36,9 +37,11 @@ router.post("/home", async (req, res) => {
         req.session.user = "guest";
         req.session.admin = false;
       }
-      res.redirect('/home')
+      res.writeHead(302 , {
+        'Location' : '/home' // This is your url which you want
+      });
 
-      
+      res.end();    
     } else {
       res.status(400).json({ error: "Invalid Password" });
     }
@@ -60,6 +63,12 @@ router.get('/home', (req, res) => {
       ipserveur: config.Config.ipserveur,
       user : user,
       admin : admin,
+      type_a : config.Readera.type_a,
+      first_character_a : config.Readera.firstCharacter,
+      read_character_a : config.Readera.nbReadCharacter,
+      type_b : config.Readerb.type_b,
+      first_character_b : config.Readerb.firstCharacter,
+      read_character_b : config.Readerb.nbReadCharacter,
       log: log
     });
 });
@@ -81,7 +90,7 @@ router.get('/network', (req, res) => {
 });
   
   
-router.post("/update-ini", async (req, res) => {
+router.post("/update-ini", function (req, res) {
   
     const body = req.body;
   
@@ -90,15 +99,35 @@ router.post("/update-ini", async (req, res) => {
     if (!body.dhcp) {
       config.Config.hostname = body.hostname
       config.Config.masque = body.mask
-      config.Config.passerelle = body.gateway  
+      config.Config.passerelle = body.gateway 
+      config.Config.dns1 = body.dns1
+      config.Config.dns2 = body.dns2  
     } else {
       config.Config.passerelle = body.dhcp   
     }
 
     fs.writeFileSync('./test.ini', ini.stringify(config))
   
-    res.status(200).json({ test: "success" });
+    return res.redirect('/home')
   
+});
+
+router.post("/update-reader", async (req, res) => {
+  const body = req.body;
+  
+  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+
+  config.Readera.type = body.type_a
+  config.Readera.firstCharacter = body.first_character_a
+  config.Readera.nbReadCharacter = body.read_character_a 
+
+  config.Readerb.type = body.type_b
+  config.Readerb.firstCharacter = body.first_character_b
+  config.Readerb.nbReadCharacter = body.read_character_b 
+
+  fs.writeFileSync('./test.ini', ini.stringify(config))
+
+  //return res.redirect('/home')
 });
   
 
