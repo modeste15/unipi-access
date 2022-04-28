@@ -3,9 +3,11 @@ const router = express.Router();
 const passport = require('passport');
 const bcrypt = require("bcrypt");
 var User = require("../models/").User;
-var fs = require('fs'), ini = require('ini')
+var fs = require('fs'), ini = require('ini');
+const { exec } = require("child_process");
 
-/*
+
+
 router.use(function (req, res, next) {
   user = req.session.user;
   if( req.path === '/home' && req.method=== 'GET'  && !user  ) {
@@ -13,13 +15,13 @@ router.use(function (req, res, next) {
   } else {
     next();
   }
-})*/
+})
 
 router.get('/', (req, res) => {
   res.render('pages/login');
 });
 
-router.post("/login", async (req, res) => {
+router.post("/home", async (req, res) => {
 
   const body = req.body;
 
@@ -56,6 +58,10 @@ router.get('/home', (req, res) => {
     admin = req.session.admin;
     var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
     var log = fs.readFileSync('./evok.log', 'utf8')
+    var ntp = ini.parse(fs.readFileSync('/etc/systemd/timesyncd.conf', 'utf-8'))
+    const ntplist = ntp.Time.NTP.split(' ');
+    
+
     res.render('pages/index',{
       hostname: config.Config.hostname,
       masque: config.Config.masque,
@@ -69,7 +75,9 @@ router.get('/home', (req, res) => {
       type_b : config.Readerb.type_b,
       first_character_b : config.Readerb.firstCharacter,
       read_character_b : config.Readerb.nbReadCharacter,
-      log: log
+      log: log, 
+      ntp: ntplist
+
     });
 });
 
@@ -130,10 +138,72 @@ router.post("/update-reader", async (req, res) => {
   //return res.redirect('/home')
 });
   
+router.post("/update-time", async (req, res) => {
+  const body = req.body;
+
+  //  If Request Automatic Checkbox is true 
+  if( req.body.automatic ) {
+
+    try {
+      // Create timesyncd.conf if it doesn't exist
+      if (!fs.existsSync('./timesyncd.conf')) {
+        exec("ln -s /etc/systemd/timesyncd.conf ./timesyncd.conf", (error, stdout, stderr) => {
+          if (error) {
+              console.log(`error: ${error.message}`);
+              return;
+          }
+          if (stderr) {
+              console.log(`stderr: ${stderr}`);
+              return;
+          }
+          console.log(`stdout: ${stdout}`);
+        });
+      } 
+
+    } catch(err) {
+      console.error(err)
+    }
+
+    //Modification de timesyncd
+    var ntp = ini.parse(fs.readFileSync('./timesyncd.conf', 'utf-8'));
+    ntp.Time.NTP = body.ntp1+' '+body.ntp2;
+
+    fs.writeFileSync('./timesyncd.conf', ini.stringify(ntp))
+
+    exec("echo '"+ process.env.ADMIN +"' |sudo -S sudo timedatectl set-ntp on", (error, stdout, stderr) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+      }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+      }
+    });
+
+  } else {
+    var command_ntp_off = "echo '"+ process.env.ADMIN +"' |sudo -S sudo timedatectl set-ntp no"; 
+
+    var command_set_time = " echo '"+process.env.ADMIN+"' | sudo -S date -s '"+ body.time +"'";
+    
+    exec(command_ntp_off+' | '+ command_set_time , (error, stdout, stderr) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+      }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+      }
+    });
+  }
+
+  return res.redirect('/home')
+});
+  
 
 router.get("/init", async (req, res) => {
-  
-  
+
   hash_admin = await bcrypt.hash( process.env.ADMIN, 10);
   // Create Admin 
   await User.create({

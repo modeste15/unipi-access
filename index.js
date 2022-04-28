@@ -43,8 +43,8 @@ models.sequelize.sync().then(function() {
 
 app.use(routes);
 
-app.listen(3001, () => {
-  console.log("Serveur démarré (http://localhost:3001/) !");
+app.listen(3000, () => {
+  console.log("Serveur démarré (http://localhost:3000/) !");
 });
 
 

@@ -29,29 +29,22 @@
     <script rel="javascript" type="text/javascript" src="js/jquery/jquery.mobile-1.4.5.min.js"></script>
     <script rel="javascript" type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript">
-        $('#dhcp').on('click', function(){
-            if ( $(this).is(':checked') ) {
-                //$('.form-input').hide();
-                $('.network-input').attr('disabled','disabled');
-            } 
-            else {
-                //$('.form-input').show();
-                $('.network-input').attr('disabled', false);
-            }
-        });
+
 
         $(document).ready(function() {
             webSocketRegister();
             updateValues();
-        });
-
-    
-        $(document).ready(function() {
             clockUpdate();
             setInterval(clockUpdate, 1000);
-        })
+            inputUpdate();
+            $('input[type="datetime-local"]').setNow();
+
+        });
+
+
     
         function clockUpdate() {
+
             var date = new Date();
             $('.digital-clock').css({'color': '#000'});
         
@@ -85,6 +78,36 @@
     
             today = dd + '/'+mm + '/' + yyyy;
             $('.date').text(today)
+
+        }
+
+        $.fn.setNow = function (onlyBlank) {
+            var now = new Date($.now())
+                , year
+                , month
+                , date
+                , hours
+                , minutes
+                , seconds
+                , formattedDateTime
+                ;
+
+            year = now.getFullYear();
+            month = now.getMonth().toString().length === 1 ? '0' + (now.getMonth() + 1).toString() : now.getMonth() + 1;
+            date = now.getDate().toString().length === 1 ? '0' + (now.getDate()).toString() : now.getDate();
+            hours = now.getHours().toString().length === 1 ? '0' + now.getHours().toString() : now.getHours();
+            minutes = now.getMinutes().toString().length === 1 ? '0' + now.getMinutes().toString() : now.getMinutes();
+            seconds = now.getSeconds().toString().length === 1 ? '0' + now.getSeconds().toString() : now.getSeconds();
+
+            formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes + ':' + seconds;
+
+            if ( onlyBlank === true && $(this).val() ) {
+                return this;
+            }
+
+            $(this).val(formattedDateTime);
+
+            return this;
         }
 
     </script>
@@ -114,6 +137,10 @@
                 width: 11% !important;
         }
         input[type="text"]:disabled {
+            background: #e9e9e9;
+        }
+
+        input[type="datetime-local"]:disabled {
             background: #e9e9e9;
         }
 
@@ -314,6 +341,58 @@
             </div>
             <!--Readers-->
 
+            <div id="datetime" class="ui-content" data-inset="true">
+                <div>
+                    
+                </div>
+                <div>
+                    <form action="/update-time"  id="formNetwork" method="post">
+                        
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">Definir l'heure automatique</label>
+                                <input type="checkbox" name="automatic" id="automatic">
+                                <label for="automatic"></label>
+                            </div>
+                        </div>
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">Date et Heure Actuelle</label>
+                                <input type="datetime-local" name="time" id="input-date">
+                            </div>
+                        </div>
+                        <div id="form-automatic">
+                            <div class="form-input">
+                                <div class="ui-field-contain " >
+                                    <label  for="">Serveur NTP1</label>
+                                    <input type="text" value="<%= (ntp[0]) ? ntp[0] : '' %>" name="ntp1">
+                                </div>
+                            </div>
+                            <div class="form-input">
+                                <div class="ui-field-contain ">
+                                    <label  for="">Serveur NTP2</label>
+                                    <input type="text" value="<%= (ntp[1]) ? ntp[1] : '' %>" name="ntp2" >
+                                </div>
+                            </div>
+                            <div class="form-input">
+                                <div class="ui-field-contain ">
+                                    <label  for="">Fuseau horaire</label>
+                                    <%- include('../partials/timezone'); %>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+
+
+                        <div>
+                            <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                        </div>
+                    </form>
+                </div>   
+            </div>
+
+
             <div id="log" class="ui-content" data-inset="true">
                 <%= (log) ? log : 'error' %>         
             </div>
@@ -335,6 +414,31 @@
 
     </div>
 
+    <script>
+        $('#dhcp').on('click', function(){
+            if ( $(this).is(':checked') ) {
+                //$('.form-input').hide();
+                $('.network-input').attr('disabled','disabled');
+            } 
+            else {
+                //$('.form-input').show();
+                $('.network-input').attr('disabled', false);
+            }
+        });
+
+        $('#automatic').on('click', function(){
+
+            if ( $(this).is(':checked') ) {
+                $('input[type="datetime-local"]').attr( 'disabled', 'disabled');
+                $('#form-automatic').show();
+            } 
+            else {
+                $('input[type="datetime-local"]').attr( 'disabled', false);
+                $('#form-automatic').hide()
+            }
+        });
+
+    </script>
 </body>
 
 </html>
