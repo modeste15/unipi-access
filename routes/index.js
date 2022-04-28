@@ -139,6 +139,7 @@ router.post("/update-reader", async (req, res) => {
 });
   
 router.post("/update-time", async (req, res) => {
+  
   const body = req.body;
 
   //  If Request Automatic Checkbox is true 
@@ -182,11 +183,10 @@ router.post("/update-time", async (req, res) => {
     });
 
   } else {
-    var command_ntp_off = "echo '"+ process.env.ADMIN +"' |sudo -S sudo timedatectl set-ntp no"; 
-
-    var command_set_time = " echo '"+process.env.ADMIN+"' | sudo -S date -s '"+ body.time +"'";
-    
-    exec(command_ntp_off+' | '+ command_set_time , (error, stdout, stderr) => {
+    var command = "echo '"+ process.env.ADMIN +"' |sudo -S sudo timedatectl set-ntp no"+
+                  "&& echo '"+process.env.ADMIN+"' | sudo -S date -s '"+ body.time +"'"; 
+        
+    exec(command , (error, stdout, stderr) => {
       if (error) {
           console.log(`error: ${error.message}`);
           return;
