@@ -156,6 +156,9 @@
             -moz-box-sizing: border-box;
             box-sizing: border-box;
         }
+        .hide {
+            display: none !important;
+        }
     </style>
 
 </head>
@@ -210,7 +213,34 @@
 
 
                 <div id="operator" class="ui-content" data-inset="true">
-                    operator
+                    <form  id="form-operator" method="post">
+                        <div class="form-input">
+
+                            <div class="ui-field-contain ">
+                                <label  for="old_password ">Old Admin Password </label>
+                                <input  type="password" name="old_password"   value="">
+                            </div>
+                            <div class="ui-field-contain ">
+                                <label  for="new_password">New Admin Password</label>
+                                <input  type="password" name="new_password"   value="">
+                            </div>
+                            <hr>
+                            <div class="ui-field-contain ">
+                                <label  for="old_guest_password">Old Guest Password</label>
+                                <input  type="password" name="old_guest_password"   value="">
+                            </div>
+                            <div class="ui-field-contain ">
+                                <label  for="new_guest_password">New Guest Password </label>
+                                <input  type="password" name="new_guest_password"   value="">
+                            </div>
+                            
+
+                        </div>
+    
+                        <div>
+                            <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div id="system" class="ui-content" data-inset="true">
@@ -244,7 +274,7 @@
                 <!-- /outputs -->
             
             <div id="networks" class="ui-content" data-inset="true">
-                <form action="/update-ini" id="formNetwork" method="post">
+                <form  id="form-network" method="post">
                     <div class="ui-field-contain">
                         <label for="dhcp">DHCP</label>
                         <input type="checkbox" name="dhcp" id="dhcp"> 
@@ -252,27 +282,27 @@
                     <div class="form-input">
                         <div class="ui-field-contain ">
                             <label  for="ip">Ip</label>
-                            <input  type="text" name="hostname" pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" class="network-input"   value="<%= (hostname) ? hostname : 'error' %> ">
+                            <input  type="text" name="hostname" pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" class="network-input"   value="<%= (hostname) ? hostname : 'error' %>">
                         </div>
                         <div class="ui-field-contain">
                             <label for="mask">Mask</label>
-                            <input type="text" name="mask"  class="network-input" value="<%= (masque) ? masque : 'error' %>" >  
+                            <input type="text" name="mask"  class="network-input" value="<%= (masque) ? masque : '' %>" >  
                         </div>
                         <div class="ui-field-contain">
                             <label for="gateway">Gateway</label>
-                            <input type="text" name="gateway"  class="network-input" value="<%= (passerelle) ? passerelle : 'error' %>">
+                            <input type="text" name="gateway"  class="network-input" value="<%= (passerelle) ? passerelle : '' %>">
                         </div>
                         <div class="ui-field-contain">
                             <label for="gateway">Ip Server</label>
-                            <input type="text" name="server"  class="network-input" value="<%= (ipserveur) ? ipserveur : 'error' %>">
+                            <input type="text" name="server"  class="network-input" value="<%= (ipserveur) ? ipserveur : '' %>">
                         </div>
                         <div class="ui-field-contain">
                             <label for="dns1">DNS 1</label>
-                            <input type="text"   class="network-input">
+                            <input type="text"  name="dns1" class="network-input" value="<%= (dns1) ? dns1 : '' %>">
                         </div>
                         <div class="ui-field-contain">
                             <label for="dns2">DNS 2</label>
-                            <input type="text"   class="network-input">
+                            <input type="text"  name="dns2" class="network-input" value="<%= (dns2) ? dns2 : '' %>">
                         </div>
                     </div>
 
@@ -342,26 +372,24 @@
             <!--Readers-->
 
             <div id="datetime" class="ui-content" data-inset="true">
-                <div>
-                    
-                </div>
+
                 <div>
                     <form action="/update-time"  id="formNetwork" method="post">
                         
                         <div class="form-input">
                             <div class="ui-field-contain ">
                                 <label  for="">Definir l'heure automatique</label>
-                                <input type="checkbox" name="automatic" id="automatic">
+                                <input type="checkbox" name="automatic" id="automatic"   checked="<%= (date_status == 1) ? 'checked' : '' %>"  >
                                 <label for="automatic"></label>
                             </div>
                         </div>
                         <div class="form-input">
                             <div class="ui-field-contain ">
                                 <label  for="">Date et Heure Actuelle</label>
-                                <input type="datetime-local" name="time" id="input-date">
+                                <input type="datetime-local" name="time" id="input-date" <%= (date_status == 1) ? 'disabled' : '' %>>
                             </div>
                         </div>
-                        <div id="form-automatic">
+                        <div id="form-automatic"  class="<%= (date_status == 0) ? 'hide' : 'show' %>"  >
                             <div class="form-input">
                                 <div class="ui-field-contain " >
                                     <label  for="">Serveur NTP1</label>
@@ -436,6 +464,68 @@
                 $('input[type="datetime-local"]').attr( 'disabled', false);
                 $('#form-automatic').hide()
             }
+        });
+
+        $("#form-operator").submit(function(event){
+            // Prevent default posting of form - put here to work in case of errors
+            event.preventDefault();
+
+            // setup some local variables
+            var $form = $(this);
+
+            // Serialize the data in the form
+            var serializedData = $form.serialize();
+
+            // Fire off the request to /form.php
+            request = $.ajax({
+                url: "/update-operator",
+                type: "post",
+                data: serializedData
+            });
+
+            // Callback handler that will be called on success
+            request.done(function (response, textStatus, jqXHR){
+                top.location.href = '/home';
+            });
+
+            // Callback handler that will be called on failure
+            request.fail(function (jqXHR, textStatus, errorThrown){
+                alert("Incorrect password");
+
+            });
+
+
+        });
+
+        $("#form-network").submit(function(event){
+            // Prevent default posting of form - put here to work in case of errors
+            event.preventDefault();
+
+            // setup some local variables
+            var $form = $(this);
+
+            // Serialize the data in the form
+            var serializedData = $form.serialize();
+
+            // Fire off the request to /form.php
+            request = $.ajax({
+                url: "/update-network",
+                type: "post",
+                data: serializedData
+            });
+
+            // Callback handler that will be called on success
+            request.done(function (response, textStatus, jqXHR){
+                top.location.href = '/home';
+            });
+
+            // Callback handler that will be called on failure
+            request.fail(function (jqXHR, textStatus, errorThrown){
+                alert("Error");
+
+            });
+
+
         });
 
     </script>

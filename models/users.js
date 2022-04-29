@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 module.exports = function(sequelize, Data) {
     var UserSchema = sequelize.define("User", {
         login: Data.STRING,
@@ -7,5 +9,7 @@ module.exports = function(sequelize, Data) {
     },{
         timestamps: false
     });
+    
+
     return UserSchema;
 }

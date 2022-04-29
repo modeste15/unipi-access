@@ -17,11 +17,29 @@ router.use(function (req, res, next) {
   }
 })
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+  const users =  await User.findAll();
+  if (users.length == 0) {
+    hash_admin = await bcrypt.hash( process.env.ADMIN, 10);
+    // Create Admin 
+    await User.create({
+      login: "admin",
+      password: hash_admin,
+      role: 1
+    });
+  
+    // Create User
+    await User.create({
+      login: "guest",
+      password: hash_admin,
+      role: 0
+    });
+  }
+
   res.render('pages/login');
 });
 
-router.post("/home", async (req, res) => {
+router.post("/login", async (req, res) => {
 
   const body = req.body;
 
@@ -39,10 +57,7 @@ router.post("/home", async (req, res) => {
         req.session.user = "guest";
         req.session.admin = false;
       }
-      res.writeHead(302 , {
-        'Location' : '/home' // This is your url which you want
-      });
-
+      res.status(200);
       res.end();    
     } else {
       res.status(400).json({ error: "Invalid Password" });
@@ -50,6 +65,43 @@ router.post("/home", async (req, res) => {
   } else {
     res.status(401).json({ error: "User does not exist" });
   }
+});
+
+
+router.post("/update-operator", async (req, res) => {
+
+  const body = req.body;
+
+  if (body.old_password  !="" && body.new_password  !="") {
+
+    const admin = await User.findOne( { where: { login: 'admin'} });
+    const validPassword = await bcrypt.compare(body.old_password, admin.password);
+    if ( validPassword ) {
+        hash_admin = await bcrypt.hash(body.new_password , 10);
+        admin.update({
+          password: hash_admin
+        })
+    } else {
+      res.status(400).json({ error: "Invalid Password" });
+    }
+  }
+
+  if (body.guest_old_password !="" && body.guest_old_password  !="") {
+
+    const guest = await User.findOne( { where: { login: 'guest'} });
+    const validPassword = await bcrypt.compare(body.guest_old_password, guest.password);
+    if ( validPassword ) {
+        hash_guest = await bcrypt.hash( body.guest_new_password, 10);
+        guest.update({
+          password: hash_guest
+        })
+    } else {
+      res.status(400).json({ error: "Invalid Password" });
+    }
+  }
+
+
+
 });
 
 router.get('/home', (req, res) => {
@@ -66,7 +118,9 @@ router.get('/home', (req, res) => {
       hostname: config.Config.hostname,
       masque: config.Config.masque,
       passerelle: config.Config.passerelle,
-      ipserveur: config.Config.ipserveur,
+      ipserveur: config.Config.IPServeur,
+      dns1: config.Config.dns1,
+      dns2: config.Config.dns2,
       user : user,
       admin : admin,
       type_a : config.Readera.type_a,
@@ -75,6 +129,7 @@ router.get('/home', (req, res) => {
       type_b : config.Readerb.type_b,
       first_character_b : config.Readerb.firstCharacter,
       read_character_b : config.Readerb.nbReadCharacter,
+      date_status : config.Date.automatic,
       log: log, 
       ntp: ntplist
 
@@ -82,23 +137,7 @@ router.get('/home', (req, res) => {
 });
 
 
-router.get('/network', (req, res) => {
-  
-  user = req.session.user;
-  admin = req.session.admin;
-  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
-  res.render('pages/network',{
-    hostname: config.Config.hostname,
-    masque: config.Config.masque,
-    passerelle: config.Config.passerelle,
-    ipserveur: config.Config.ipserveur,
-    user : user,
-    admin : admin,
-  });
-});
-  
-  
-router.post("/update-ini", function (req, res) {
+router.post("/update-network", function (req, res) {
   
     const body = req.body;
   
@@ -108,10 +147,11 @@ router.post("/update-ini", function (req, res) {
       config.Config.hostname = body.hostname
       config.Config.masque = body.mask
       config.Config.passerelle = body.gateway 
+      config.Config.IPServeur = body.server 
       config.Config.dns1 = body.dns1
       config.Config.dns2 = body.dns2  
     } else {
-      config.Config.passerelle = body.dhcp   
+      //Si dhcp  
     }
 
     fs.writeFileSync('./test.ini', ini.stringify(config))
@@ -202,7 +242,7 @@ router.post("/update-time", async (req, res) => {
 });
   
 
-router.get("/init", async (req, res) => {
+router.post("/init", async (req, res) => {
 
   hash_admin = await bcrypt.hash( process.env.ADMIN, 10);
   // Create Admin 
