@@ -133,6 +133,10 @@
         .menu {
             display: flex !important;
         }
+        #networks button {
+            margin-left: 15px !important;
+            width: 40% !important;
+        }
         .ui-grid-a > .ui-block-a, .ui-grid-a > .ui-block-b {
                 width: 11% !important;
         }
@@ -169,6 +173,10 @@
         <div class="cmax8 info">
             <h4 style="margin: 0px;">  
                 <%= user %>
+                <a href="/">
+                    <img src="/icon/power.png" width="25px" height="25px" alt="">
+
+                </a>
             </h3>
             <div class="date"></div>
             <div class="digital-clock">00:00:00</div>
@@ -306,8 +314,10 @@
                         </div>
                     </div>
 
-                    <div>
-                        <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                    <div style="display: flex;display: block ruby;text-align:end">
+                        <button type="submit"  class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                        <button id="reload-network"  class="ui-link ui-btn ui-btn-a ui-tabs-anchor ">Reload</button>
+
                     </div>
                 </form>
 
@@ -374,7 +384,7 @@
             <div id="datetime" class="ui-content" data-inset="true">
 
                 <div>
-                    <form action="/update-time"  id="formNetwork" method="post">
+                    <form action="/update-time"  id="form-time" method="post">
                         
                         <div class="form-input">
                             <div class="ui-field-contain ">
@@ -393,13 +403,13 @@
                             <div class="form-input">
                                 <div class="ui-field-contain " >
                                     <label  for="">Serveur NTP1</label>
-                                    <input type="text" value="<%= (ntp[0]) ? ntp[0] : '' %>" name="ntp1">
+                                    <input type="text" value="<%= (ntp) ? ntp[0] : '' %>" name="ntp1">
                                 </div>
                             </div>
                             <div class="form-input">
                                 <div class="ui-field-contain ">
                                     <label  for="">Serveur NTP2</label>
-                                    <input type="text" value="<%= (ntp[1]) ? ntp[1] : '' %>" name="ntp2" >
+                                    <input type="text" value="<%= (ntp) ? ntp[1] : '' %>" name="ntp2" >
                                 </div>
                             </div>
                             <div class="form-input">
@@ -528,6 +538,68 @@
 
         });
 
+        $("#reload-network").click(  function(event){
+            // Prevent default posting of form - put here to work in case of errors
+            event.preventDefault();
+
+            // setup some local variables
+            var $form = $(this);
+
+            // Serialize the data in the form
+            var serializedData = $form.serialize();
+
+            // Fire off the request to /form.php
+            request = $.ajax({
+                url: "/reload-network",
+                type: "post",
+            });
+
+            // Callback handler that will be called on success
+            request.done(function (response, textStatus, jqXHR){
+                top.location.href = '/home';
+            });
+
+            // Callback handler that will be called on failure
+            request.fail(function (jqXHR, textStatus, errorThrown){
+                alert("Error");
+
+            });
+
+
+        });
+
+        $('#form-time').submit(function(event){
+            // Prevent default posting of form - put here to work in case of errors
+            event.preventDefault();
+
+            // setup some local variables
+            var $form = $(this);
+
+            // Serialize the data in the form
+            var serializedData = $form.serialize();
+
+            // Fire off the request to /form.php
+            request = $.ajax({
+                url: "/update-time",
+                type: "post",
+                data: serializedData
+            });
+
+            // Callback handler that will be called on success
+            request.done(function (response, textStatus, jqXHR){
+                top.location.href = '/home';
+            });
+
+            // Callback handler that will be called on failure
+            request.fail(function (jqXHR, textStatus, errorThrown){
+                alert("Error");
+
+            });
+
+
+        });
+
+        
     </script>
 </body>
 

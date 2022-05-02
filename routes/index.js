@@ -18,6 +18,7 @@ router.use(function (req, res, next) {
 })
 
 router.get('/', async (req, res) => {
+  req.session.destroy();
   const users =  await User.findAll();
   if (users.length == 0) {
     hash_admin = await bcrypt.hash( process.env.ADMIN, 10);
@@ -104,6 +105,28 @@ router.post("/update-operator", async (req, res) => {
 
 });
 
+router.post("/reload-network", async (req, res) => {
+
+  
+  exec("echo '"+ process.env.ADMIN +"' | sudo systemctl stop NetworkManager.service", (error, stdout, stderr) => {
+    
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+
+    return 
+  });
+  res.status(200).json({ message: "Reboot Network" });
+
+
+});
+
 router.get('/home', (req, res) => {
   
     user = req.session.user;
@@ -111,7 +134,11 @@ router.get('/home', (req, res) => {
     var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
     var log = fs.readFileSync('./evok.log', 'utf8')
     var ntp = ini.parse(fs.readFileSync('/etc/systemd/timesyncd.conf', 'utf-8'))
-    const ntplist = ntp.Time.NTP.split(' ');
+    const ntplist = null;  
+    if ( ntp.Time.FallbackNTP != null) {
+      const ntplist = ntp.Time.FallbackNTP.split(' ');
+    } 
+    
     
 
     res.render('pages/index',{
@@ -144,18 +171,47 @@ router.post("/update-network", function (req, res) {
     var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
   
     if (!body.dhcp) {
+      config.Config.dhcp = 0 
       config.Config.hostname = body.hostname
       config.Config.masque = body.mask
       config.Config.passerelle = body.gateway 
       config.Config.IPServeur = body.server 
       config.Config.dns1 = body.dns1
       config.Config.dns2 = body.dns2  
+
+      let data = "# interfaces(5) file used by ifup(8) and ifdown(8)\n"+
+      "# Please note that this file is written to be used with dhcpcd \n" +
+      "# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf' \n" +
+      "# Include files from /etc/network/interfaces.d: \n" +
+        "source-directory /etc/network/interfaces.d \n" +
+        
+        "auto lo \n"+
+        "iface lo inet static \n" +
+	      "address " + body.hostname +"\n" + 
+        "\tnetmask " + body.mask +"\n" +
+        "\tgateway " + body.gateway +"\n"+
+        "\tdns-nameservers "+  body.dns1 + body.dns2;
+  
+
     } else {
-      //Si dhcp  
+      config.Config.dhcp = 1 ;
+      let data = "allow-hotplug eth0 \n"
+        "iface eth0 inet dhcp \n";
     }
 
+
     fs.writeFileSync('./test.ini', ini.stringify(config))
-  
+
+    fs.writeFile("interfaces", data, (err) => {
+      if (err)
+        console.log(err);
+      else {
+        console.log("File written successfully\n");
+        console.log("The written has the following contents:");
+        console.log(fs.readFileSync("interfaces", "utf8"));
+      }
+    });
+
     return res.redirect('/home')
   
 });
@@ -207,11 +263,11 @@ router.post("/update-time", async (req, res) => {
 
     //Modification de timesyncd
     var ntp = ini.parse(fs.readFileSync('./timesyncd.conf', 'utf-8'));
-    ntp.Time.NTP = body.ntp1+' '+body.ntp2;
+    ntp.Time.FallbackNTP = body.ntp1+' '+body.ntp2;
 
     fs.writeFileSync('./timesyncd.conf', ini.stringify(ntp))
 
-    exec("echo '"+ process.env.ADMIN +"' |sudo -S sudo timedatectl set-ntp on", (error, stdout, stderr) => {
+    exec("echo '"+ process.env.ADMIN +"' | sudo -S sudo timedatectl set-ntp on", (error, stdout, stderr) => {
       if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -223,8 +279,8 @@ router.post("/update-time", async (req, res) => {
     });
 
   } else {
-    var command = "echo '"+ process.env.ADMIN +"' |sudo -S sudo timedatectl set-ntp no"+
-                  "&& echo '"+process.env.ADMIN+"' | sudo -S date -s '"+ body.time +"'"; 
+    var command = "echo '"+ process.env.ADMIN +"' | sudo -S sudo timedatectl set-ntp no"+
+                  "&& sudo -S date -s '"+ body.time +"'"; 
         
     exec(command , (error, stdout, stderr) => {
       if (error) {
