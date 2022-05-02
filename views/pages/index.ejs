@@ -325,7 +325,7 @@
 
             <!--Readers-->
             <div id="readers" class="ui-content" data-inset="true">
-                <form action="/update-reader" id="formNetwork" method="post">
+                <form action="/update-reader" id="form-reader" method="post">
                     <h1>Reader A</h1>
                     <div class="form-input">
                         <div class="ui-field-contain ">
@@ -538,6 +538,40 @@
 
         });
 
+        $("#form-reader").submit(function(event){
+            // Prevent default posting of form - put here to work in case of errors
+            event.preventDefault();
+
+            // setup some local variables
+            var $form = $(this);
+
+            // Serialize the data in the form
+            var serializedData = $form.serialize();
+
+            // Fire off the request to /form.php
+            request = $.ajax({
+                url: "/update-reader",
+                type: "post",
+                data: serializedData
+            });
+
+            // Callback handler that will be called on success
+            request.done(function (response, textStatus, jqXHR){
+                top.location.href = '/home';
+            });
+
+            // Callback handler that will be called on failure
+            request.fail(function (jqXHR, textStatus, errorThrown){
+                alert("Error");
+
+            });
+
+
+        });
+
+
+        
+        
         $("#reload-network").click(  function(event){
             // Prevent default posting of form - put here to work in case of errors
             event.preventDefault();

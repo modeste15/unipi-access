@@ -231,7 +231,7 @@ router.post("/update-reader", async (req, res) => {
 
   fs.writeFileSync('./test.ini', ini.stringify(config))
 
-  //return res.redirect('/home')
+  return res.redirect('/home')
 });
   
 router.post("/update-time", async (req, res) => {
