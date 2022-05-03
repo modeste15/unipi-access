@@ -261,13 +261,11 @@ router.get('/log', (req, res) => {
   // Driver code
   let log = readFileLines('evok.log');
   
-  // Print the array
-  console.log(log);
   
   res.render('pages/log',{
     user : user,
     admin : admin,
-    log: log
+    log: log.toString().split('\n')
   });
   
 });

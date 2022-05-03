@@ -43,7 +43,10 @@
             
 
             <div id="log" class="ui-content" data-inset="true">
-                <%= (log) ? log : '' %>         
+                <% for(var i=0; i < log.length; i++) { %>
+                      <p><%= log[i] %></p>
+                    </hr>
+                <% } %>     
             </div>
             
             <!-- /content -->
