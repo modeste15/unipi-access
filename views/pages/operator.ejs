@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>
+<html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>
+<html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>
+<html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en"> <!--<![endif]-->
+    
+<%- include('../partials/head'); %>
+
+<body>
+
+    <!-- OVERVIEW page -->
+    <div data-role="page" id="page-overview">
+        <%- include('../partials/header'); %>
+
+        <div data-role="main" class="ui-content cmax8">
+            
+        <div  >
+                
+            <%- include('../partials/menu'); %>
+
+            
+
+            <div id="operator" class="ui-content" data-inset="true">
+                <form  id="form-operator" method="post">
+                    <div class="form-input">
+
+                        <div class="ui-field-contain ">
+                            <label  for="old_password ">Old Admin Password </label>
+                            <input  type="password" name="old_password"   value="">
+                        </div>
+                        <div class="ui-field-contain ">
+                            <label  for="new_password">New Admin Password</label>
+                            <input  type="password" name="new_password"   value="">
+                        </div>
+                        <hr>
+                        <div class="ui-field-contain ">
+                            <label  for="old_guest_password">Old Guest Password</label>
+                            <input  type="password" name="old_guest_password"   value="">
+                        </div>
+                        <div class="ui-field-contain ">
+                            <label  for="new_guest_password">New Guest Password </label>
+                            <input  type="password" name="new_guest_password"   value="">
+                        </div>
+                        
+
+                    </div>
+
+                    <div>
+                        <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- /inputs -->
+            
+            <!-- /content -->
+        </div>
+        <!-- /tabs -->
+        </div>
+
+        <!-- /footer -->
+        <div data-role="popup" id="unipi_config_form_div">
+            <form id="unipi_config_form">
+                <div style="padding:20px 20px;" class="" id="unipi_config_form_inner_div">
+                </div>
+            </form>
+        </div>
+        
+
+    </div>
+    <script rel="javascript" type="text/javascript" src="js/app.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>
+<html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>
+<html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>
+<html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en"> <!--<![endif]-->
+    
+<%- include('../partials/head'); %>
+
+<body>
+
+    <!-- OVERVIEW page -->
+    <div data-role="page" id="page-overview">
+
+        <%- include('../partials/header'); %>
+
+        <div data-role="main" class="ui-content cmax8">
+            
+        <div  >
+                
+            <%- include('../partials/menu'); %>
+
+            
+            <div id="inputs" class="ui-content" data-inset="true">
+                <ul data-role="listview" id="inputs_list" data-count-theme="b" data-inset="true" data-split-icon="gear">
+                    <li data-role="list-divider" data-theme="a" id="unipi_input_divider">Digital</li>
+                    <li data-role="list-divider" data-theme="a" id="unipi_ai_divider">Analog</li>
+                    <li data-role="list-divider" data-theme="a" id="unipi_temp_divider">1Wire Sensors/Devices</li>
+                    <li data-role="list-divider" data-theme="a" id="unipi_modbus_divider">Modbus extensions</li>
+                </ul>
+            </div>
+            <!-- /inputs -->
+            
+            <!-- /content -->
+        </div>
+        <!-- /tabs -->
+        </div>
+
+        <!-- /footer -->
+        <div data-role="popup" id="unipi_config_form_div">
+            <form id="unipi_config_form">
+                <div style="padding:20px 20px;" class="" id="unipi_config_form_inner_div">
+                </div>
+            </form>
+        </div>
+        
+
+    </div>
+    <script rel="javascript" type="text/javascript" src="js/app.js"></script>
+
+
+</body>
+
+</html>

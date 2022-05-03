@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>
+<html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>
+<html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>
+<html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en"> <!--<![endif]-->
+    
+<%- include('../partials/head'); %>
+
+<body>
+
+    <!-- OVERVIEW page -->
+    <div data-role="page" id="page-overview">
+
+        <%- include('../partials/header'); %>
+
+        <div data-role="main" class="ui-content cmax8">
+            
+        <div  >
+                
+            <%- include('../partials/menu'); %>
+
+            
+            <div id="networks" class="ui-content" data-inset="true">
+                <form  id="form-network" method="post">
+                    <div class="ui-field-contain">
+                        <label for="dhcp">DHCP</label>
+                        <input type="checkbox" name="dhcp" id="dhcp"> 
+                    </div>
+                    <div class="form-input">
+                        <div class="ui-field-contain ">
+                            <label  for="ip">Ip</label>
+                            <input  type="text" name="hostname" pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" class="network-input"   value="<%= (hostname) ? hostname : 'error' %>">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="mask">Mask</label>
+                            <input type="text" name="mask"  class="network-input" value="<%= (masque) ? masque : '' %>" >  
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="gateway">Gateway</label>
+                            <input type="text" name="gateway"  class="network-input" value="<%= (passerelle) ? passerelle : '' %>">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="gateway">Ip Server</label>
+                            <input type="text" name="server"  class="network-input" value="<%= (ipserveur) ? ipserveur : '' %>">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="dns1">DNS 1</label>
+                            <input type="text"  name="dns1" class="network-input" value="<%= (dns1) ? dns1 : '' %>">
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="dns2">DNS 2</label>
+                            <input type="text"  name="dns2" class="network-input" value="<%= (dns2) ? dns2 : '' %>">
+                        </div>
+                    </div>
+
+                    <div class="has-text-right">
+                        <button type="submit"  class="button is-info" style="width: auto !important;">Submit</button>
+                        <button id="reload-network"  class="button is-danger " style="width: auto !important;">Reload</button>
+
+                    </div>
+                </form>
+
+            </div>
+            <!-- /inputs -->
+            
+            <!-- /content -->
+        </div>
+        <!-- /tabs -->
+        </div>
+
+        <!-- /footer -->
+        <div data-role="popup" id="unipi_config_form_div">
+            <form id="unipi_config_form">
+                <div style="padding:20px 20px;" class="" id="unipi_config_form_inner_div">
+                </div>
+            </form>
+        </div>
+        
+
+    </div>
+    <script rel="javascript" type="text/javascript" src="js/app.js"></script>
+
+
+</body>
+
+</html>

@@ -3,14 +3,17 @@ const router = express.Router();
 const passport = require('passport');
 const bcrypt = require("bcrypt");
 var User = require("../models/").User;
-var fs = require('fs'), ini = require('ini');
+var fs = require('fs');
+var ini = require('ini');
+var readline = require('readline');
+
 const { exec } = require("child_process");
 
 
 
 router.use(function (req, res, next) {
   user = req.session.user;
-  if( req.path === '/home' && req.method=== 'GET'  && !user  ) {
+  if( req.path != '/' && req.method=== 'GET'  && !user  ) {
     res.redirect('/');
   } else {
     next();
@@ -67,7 +70,6 @@ router.post("/login", async (req, res) => {
     res.status(401).json({ error: "User does not exist" });
   }
 });
-
 
 router.post("/update-operator", async (req, res) => {
 
@@ -127,40 +129,161 @@ router.post("/reload-network", async (req, res) => {
 
 });
 
-router.get('/home', (req, res) => {
+
+
+router.get('/input', (req, res) => {
   
     user = req.session.user;
     admin = req.session.admin;
-    var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
-    var log = fs.readFileSync('./evok.log', 'utf8')
-    var ntp = ini.parse(fs.readFileSync('/etc/systemd/timesyncd.conf', 'utf-8'))
-    const ntplist = null;  
-    if ( ntp.Time.FallbackNTP != null) {
-      const ntplist = ntp.Time.FallbackNTP.split(' ');
-    } 
-    
-    
 
-    res.render('pages/index',{
-      hostname: config.Config.hostname,
-      masque: config.Config.masque,
-      passerelle: config.Config.passerelle,
-      ipserveur: config.Config.IPServeur,
-      dns1: config.Config.dns1,
-      dns2: config.Config.dns2,
+    res.render('pages/input',{
       user : user,
-      admin : admin,
-      type_a : config.Readera.type_a,
-      first_character_a : config.Readera.firstCharacter,
-      read_character_a : config.Readera.nbReadCharacter,
-      type_b : config.Readerb.type_b,
-      first_character_b : config.Readerb.firstCharacter,
-      read_character_b : config.Readerb.nbReadCharacter,
-      date_status : config.Date.automatic,
-      log: log, 
-      ntp: ntplist
-
+      admin : admin
     });
+
+});
+
+router.get('/output', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+
+  res.render('pages/output',{
+    user : user,
+    admin : admin
+  });
+
+});
+
+router.get('/config', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+
+  res.render('pages/config',{
+    user : user,
+    admin : admin
+  });
+
+});
+
+
+router.get('/network', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+
+  
+
+  res.render('pages/network',{
+    hostname: config.Config.hostname,
+    masque: config.Config.masque,
+    passerelle: config.Config.passerelle,
+    ipserveur: config.Config.IPServeur,
+    dns1: config.Config.dns1,
+    dns2: config.Config.dns2,
+    user : user,
+    admin : admin,
+  });
+  
+});
+
+router.get('/reader', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+
+  res.render('pages/reader',{
+    user : user,
+    admin : admin,
+    type_a : config.Readera.type_a,
+    first_character_a : config.Readera.firstCharacter,
+    read_character_a : config.Readera.nbReadCharacter,
+    type_b : config.Readerb.type_b,
+    first_character_b : config.Readerb.firstCharacter,
+    read_character_b : config.Readerb.nbReadCharacter,
+  });
+  
+});
+
+
+router.get('/operator', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+
+
+  res.render('pages/operator',{
+    user : user,
+    admin : admin
+  });
+  
+});
+
+router.get('/datetime', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+  var ntp = ini.parse(fs.readFileSync('/etc/systemd/timesyncd.conf', 'utf-8'))
+  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+  const ntplist = null;  
+  if ( ntp.Time.FallbackNTP != null) {
+    const ntplist = ntp.Time.FallbackNTP.split(' ');
+  } 
+  
+  
+
+  res.render('pages/datetime',{
+    user : user,
+    admin : admin,
+    date_status : config.Date.automatic,
+    ntp: ntplist
+  });
+  
+});
+
+
+router.get('/log', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+
+  // Creating a function which takes a file as input
+  const readFileLines = filename =>
+    fs
+      .readFileSync(filename)
+      .toString('UTF8')
+      .split('</br>');
+  
+  
+  // Driver code
+  let log = readFileLines('evok.log');
+  
+  // Print the array
+  console.log(log);
+  
+  res.render('pages/log',{
+    user : user,
+    admin : admin,
+    log: log
+  });
+  
+});
+
+
+router.get('/device', (req, res) => {
+  
+  user = req.session.user;
+  admin = req.session.admin;
+
+
+  res.render('pages/device',{
+    user : user,
+    admin : admin
+  });
+  
 });
 
 
@@ -212,7 +335,7 @@ router.post("/update-network", function (req, res) {
       }
     });
 
-    return res.redirect('/home')
+    return res.redirect('/input')
   
 });
 
@@ -231,7 +354,7 @@ router.post("/update-reader", async (req, res) => {
 
   fs.writeFileSync('./test.ini', ini.stringify(config))
 
-  return res.redirect('/home')
+  return res.redirect('/input')
 });
   
 router.post("/update-time", async (req, res) => {
@@ -294,9 +417,8 @@ router.post("/update-time", async (req, res) => {
     });
   }
 
-  return res.redirect('/home')
+  return res.redirect('/input')
 });
-  
 
 router.post("/init", async (req, res) => {
 
