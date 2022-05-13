@@ -205,8 +205,8 @@ $(document).ready(function() {
     updateValues();
     clockUpdate();
     setInterval(clockUpdate, 1000);
-    inputUpdate();
-    $('input[type="datetime-local"]').setNow();
+    //inputUpdate();
+    //$('input[type="datetime-local"]').setNow();
 
 });
 

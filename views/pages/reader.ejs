@@ -31,10 +31,10 @@
                     <div class="form-input">
                         <div class="ui-field-contain ">
                             <label  for="">Type</label>
-                            <select name="type_a" id="" value="<%= (type_a) ? type_a : '' %>">
-                                <option value="HEXADECIMAL">Hexadecimal</option>
-                                <option value="DECIMAL">Decimal</option>
-                                <option value="ASCII">Ascii</option>
+                            <select name="type_a" id="" >
+                                <option value="HEXADECIMAL" <%= (type_a == 'HEXADECIMAL') ? 'selected=true' : '' %>  >Hexadecimal</option>
+                                <option value="DECIMAL" <%= (type_a == 'DECIMAL') ? 'selected=true' : '' %>>Decimal</option>
+                                <option value="ASCII" <%= (type_a == 'ASCII') ? 'selected=true' : '' %> >Ascii</option>
                             </select>
                         </div>
                     </div>
@@ -54,10 +54,10 @@
                     <div class="form-input">
                         <div class="ui-field-contain ">
                             <label  for="">Type</label>
-                            <select name="type_b"  id="">
-                                <option value="HEXADECIMAL">Hexadecimal</option>
-                                <option value="DECIMAL">Decimal</option>
-                                <option value="ASCII">Ascii</option>
+                            <select name="type_b"  id="" value="<%= (type_b) ? type_b : 'error' %>">
+                                <option value="HEXADECIMAL" <%= (type_b == 'HEXADECIMAL') ? 'selected=true' : '' %> >Hexadecimal</option>
+                                <option value="DECIMAL" <%= (type_b == 'DECIMAL') ? 'selected=true' : '' %>>Decimal</option>
+                                <option value="ASCII" <%= (type_b == 'ASCII') ? 'selected=true' : '' %> >Ascii</option>
                             </select>
                         </div>
                     </div>

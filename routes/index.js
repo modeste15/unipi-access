@@ -10,7 +10,9 @@ var readline = require('readline');
 const { exec } = require("child_process");
 
 
-
+/**
+ * Middleware to verify authentication
+ */
 router.use(function (req, res, next) {
   user = req.session.user;
   if( req.path != '/' && req.method=== 'GET'  && !user  ) {
@@ -20,6 +22,9 @@ router.use(function (req, res, next) {
   }
 })
 
+/**
+ * 
+ */
 router.get('/', async (req, res) => {
   req.session.destroy();
   const users =  await User.findAll();
@@ -193,15 +198,15 @@ router.get('/reader', (req, res) => {
   
   user = req.session.user;
   admin = req.session.admin;
-  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
 
   res.render('pages/reader',{
     user : user,
     admin : admin,
-    type_a : config.Readera.type_a,
+    type_a : config.Readera.type,
     first_character_a : config.Readera.firstCharacter,
     read_character_a : config.Readera.nbReadCharacter,
-    type_b : config.Readerb.type_b,
+    type_b : config.Readerb.type,
     first_character_b : config.Readerb.firstCharacter,
     read_character_b : config.Readerb.nbReadCharacter,
   });
@@ -259,7 +264,7 @@ router.get('/log', (req, res) => {
   
   
   // Driver code
-  let log = readFileLines('evok.log');
+  let log = readFileLines(process.env.LOG_FILE);
   
   
   res.render('pages/log',{
@@ -289,7 +294,7 @@ router.post("/update-network", function (req, res) {
   
     const body = req.body;
   
-    var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+    var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
   
     if (!body.dhcp) {
       config.Config.dhcp = 0 
@@ -300,7 +305,7 @@ router.post("/update-network", function (req, res) {
       config.Config.dns1 = body.dns1
       config.Config.dns2 = body.dns2  
 
-      let data = "# interfaces(5) file used by ifup(8) and ifdown(8)\n"+
+      var data = "# interfaces(5) file used by ifup(8) and ifdown(8)\n"+
       "# Please note that this file is written to be used with dhcpcd \n" +
       "# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf' \n" +
       "# Include files from /etc/network/interfaces.d: \n" +
@@ -316,21 +321,16 @@ router.post("/update-network", function (req, res) {
 
     } else {
       config.Config.dhcp = 1 ;
-      let data = "allow-hotplug eth0 \n"
+      var data = "allow-hotplug eth0 \n"
         "iface eth0 inet dhcp \n";
     }
 
 
-    fs.writeFileSync('./test.ini', ini.stringify(config))
+    fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
 
-    fs.writeFile("interfaces", data, (err) => {
+    fs.writeFile( process.env.CONFIG_EVOK_FILE, data, (err) => {
       if (err)
         console.log(err);
-      else {
-        console.log("File written successfully\n");
-        console.log("The written has the following contents:");
-        console.log(fs.readFileSync("interfaces", "utf8"));
-      }
     });
 
     return res.redirect('/input')
@@ -340,7 +340,7 @@ router.post("/update-network", function (req, res) {
 router.post("/update-reader", async (req, res) => {
   const body = req.body;
   
-  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE , 'utf-8'))
 
   config.Readera.type = body.type_a
   config.Readera.firstCharacter = body.first_character_a
@@ -350,7 +350,7 @@ router.post("/update-reader", async (req, res) => {
   config.Readerb.firstCharacter = body.first_character_b
   config.Readerb.nbReadCharacter = body.read_character_b 
 
-  fs.writeFileSync('./test.ini', ini.stringify(config))
+  fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
 
   return res.redirect('/input')
 });
