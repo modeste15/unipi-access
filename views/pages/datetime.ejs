@@ -6,12 +6,24 @@
 <!--[if IE 8 ]>
 <html class="ie ie8" lang="en"> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!-->
-<html lang="en"> <!--<![endif]-->
+<html lang="fr"> <!--<![endif]-->
     
 <%- include('../partials/head'); %>
 
 <body>
-
+    <style>
+        .without_ampm::-webkit-datetime-edit-ampm-field {
+            display: none;
+        }
+        input[type=datetime]::-webkit-clear-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -o-appearance: none;
+            -ms-appearance:none;
+            appearance: none;
+            margin: -10px; 
+        }
+    </style>
     <!-- OVERVIEW page -->
     <div data-role="page" id="page-overview">
         
@@ -32,14 +44,14 @@
                         <div class="form-input">
                             <div class="ui-field-contain ">
                                 <label  for="">Definir l'heure automatique</label>
-                                <input type="checkbox" name="automatic" id="automatic"     >
+                                <input type="checkbox" name="automatic" id="automatic"   >
                                 <label for="automatic"></label>
                             </div>
                         </div>
                         <div class="form-input">
                             <div class="ui-field-contain ">
                                 <label  for="">Date et Heure Actuelle</label>
-                                <input type="datetime-local" name="time" id="input-date" >
+                                <input type="datetime-local" name="time" id="input-date" value="<%= (local) ? local : '' %>" >
                             </div>
                         </div>
                         <div id="form-automatic"  class="<%= (date_status == 0) ? 'hide' : 'show' %>"  >
@@ -64,10 +76,8 @@
 
                         </div>
                         
-
-
-                        <div>
-                            <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                        <div class="has-text-right">
+                            <button type="submit" class="button is-info" style="width: auto !important;">Submit</button>
                         </div>
                     </form>
                 </div>   

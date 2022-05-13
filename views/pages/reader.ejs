@@ -27,55 +27,61 @@
             <!--Readers-->
             <div id="readers" class="ui-content" data-inset="true">
                 <form action="/update-reader" id="form-reader" method="post">
-                    <h1>Reader A</h1>
-                    <div class="form-input">
-                        <div class="ui-field-contain ">
-                            <label  for="">Type</label>
-                            <select name="type_a" id="" >
-                                <option value="HEXADECIMAL" <%= (type_a == 'HEXADECIMAL') ? 'selected=true' : '' %>  >Hexadecimal</option>
-                                <option value="DECIMAL" <%= (type_a == 'DECIMAL') ? 'selected=true' : '' %>>Decimal</option>
-                                <option value="ASCII" <%= (type_a == 'ASCII') ? 'selected=true' : '' %> >Ascii</option>
-                            </select>
+                    <div class="card p-3 my-2">
+                        <h3 class="has-text-weight-semibold is-size-5">Reader A</h3>
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">Type</label>
+                                <select name="type_a" id="" >
+                                    <option value="HEXADECIMAL" <%= (type_a == 'HEXADECIMAL') ? 'selected=true' : '' %>  >Hexadecimal</option>
+                                    <option value="DECIMAL" <%= (type_a == 'DECIMAL') ? 'selected=true' : '' %>>Decimal</option>
+                                    <option value="ASCII" <%= (type_a == 'ASCII') ? 'selected=true' : '' %> >Ascii</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-input">
+                            <div class="ui-field-contain " >
+                                <label  for="">First Character</label>
+                                <input type="number" value="<%= (first_character_a) ? first_character_a : 0 %>" name="first_character_a">
+                            </div>
+                        </div>
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">Number Reader Character</label>
+                                <input type="number" value="<%= (read_character_a) ? read_character_a : 0 %>" name="read_character_a" >
+                            </div>
                         </div>
                     </div>
-                    <div class="form-input">
-                        <div class="ui-field-contain " >
-                            <label  for="">First Character</label>
-                            <input type="number" value="<%= (first_character_a) ? first_character_a : 0 %>" name="first_character_a">
+                    
+
+                    <div class="card p-3 my-2">
+                        <h3 class="has-text-weight-semibold is-size-5">Reader B</h3>
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">Type</label>
+                                <select name="type_b"  id="" value="<%= (type_b) ? type_b : 'error' %>">
+                                    <option value="HEXADECIMAL" <%= (type_b == 'HEXADECIMAL') ? 'selected=true' : '' %> >Hexadecimal</option>
+                                    <option value="DECIMAL" <%= (type_b == 'DECIMAL') ? 'selected=true' : '' %>>Decimal</option>
+                                    <option value="ASCII" <%= (type_b == 'ASCII') ? 'selected=true' : '' %> >Ascii</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-input">
-                        <div class="ui-field-contain ">
-                            <label  for="">Number Reader Character</label>
-                            <input type="number" value="<%= (read_character_a) ? read_character_a : 0 %>" name="read_character_a" >
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">First Character</label>
+                                <input type="number"  value="<%= (first_character_b) ? first_character_b : 0 %>" name="first_character_b">
+                            </div>
                         </div>
-                    </div>
-                    <h1>Reader B</h1>
-                    <div class="form-input">
-                        <div class="ui-field-contain ">
-                            <label  for="">Type</label>
-                            <select name="type_b"  id="" value="<%= (type_b) ? type_b : 'error' %>">
-                                <option value="HEXADECIMAL" <%= (type_b == 'HEXADECIMAL') ? 'selected=true' : '' %> >Hexadecimal</option>
-                                <option value="DECIMAL" <%= (type_b == 'DECIMAL') ? 'selected=true' : '' %>>Decimal</option>
-                                <option value="ASCII" <%= (type_b == 'ASCII') ? 'selected=true' : '' %> >Ascii</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-input">
-                        <div class="ui-field-contain ">
-                            <label  for="">First Character</label>
-                            <input type="number"  value="<%= (first_character_b) ? first_character_b : 0 %>" name="first_character_b">
-                        </div>
-                    </div>
-                    <div class="form-input">
-                        <div class="ui-field-contain ">
-                            <label  for="">Number Reader Character</label>
-                            <input type="number" value="<%= (read_character_b) ? read_character_b : 0 %>" name="read_character_b">
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="">Number Reader Character</label>
+                                <input type="number" value="<%= (read_character_b) ? read_character_b : 0 %>" name="read_character_b">
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <button type="submit" class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Submit</button>
+                    <div class="has-text-right">
+                        <button type="submit" class="button is-info" style="width: auto !important;">Submit</button>
                     </div>
                 </form>
 

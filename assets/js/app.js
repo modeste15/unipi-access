@@ -42,12 +42,12 @@ $("#form-operator").submit(function(event){
 
     // Callback handler that will be called on success
     request.done(function (response, textStatus, jqXHR){
-        top.location.href = '/input';
+        top.location.href = '/';
     });
 
     // Callback handler that will be called on failure
     request.fail(function (jqXHR, textStatus, errorThrown){
-        alert("Incorrect password");
+        alert("Admin Incorrect password");
 
     });
 
@@ -203,50 +203,9 @@ window.onclick = function(event) {
 $(document).ready(function() {
     webSocketRegister();
     updateValues();
-    clockUpdate();
-    setInterval(clockUpdate, 1000);
-    //inputUpdate();
-    //$('input[type="datetime-local"]').setNow();
-
 });
 
-function clockUpdate() {
 
-    var date = new Date();
-    $('.digital-clock').css({'color': '#000'});
-
-    function addZero(x) {
-        if (x < 10) {
-        return x = '0' + x;
-        } else {
-        return x;
-    }
-    }
-
-    function twelveHour(x) {
-        if (x > 12) {
-        return x = x - 12;
-        } else if (x == 0) {
-        return x = 12;
-        } else {
-        return x;
-        }
-    }
-
-    var h = addZero(twelveHour(date.getHours()));
-    var m = addZero(date.getMinutes());
-    var s = addZero(date.getSeconds());
-
-    $('.digital-clock').text(h + ':' + m + ':' + s)
-
-    var dd = String(date.getDate()).padStart(2, '0');
-    var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = date.getFullYear();
-
-    today = dd + '/'+mm + '/' + yyyy;
-    $('.date').text(today)
-
-}
 
 $.fn.setNow = function (onlyBlank) {
     var now = new Date($.now())

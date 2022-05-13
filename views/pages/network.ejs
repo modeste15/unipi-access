@@ -55,12 +55,15 @@
                             <label for="dns2">DNS 2</label>
                             <input type="text"  name="dns2" class="network-input" value="<%= (dns2) ? dns2 : '' %>">
                         </div>
+                        <div class="ui-field-contain">
+                            <label for="key">API KEY</label>
+                            <input type="text"  name="key" class="network-input" value="<%= (key) ? key : '' %>">
+                        </div>
                     </div>
 
                     <div class="has-text-right">
-                        <button type="submit"  class="button is-info" style="width: auto !important;">Submit</button>
                         <button id="reload-network"  class="button is-danger " style="width: auto !important;">Reload</button>
-
+                        <button type="submit"  class="button is-info" style="width: auto !important;">Submit</button>
                     </div>
                 </form>
 

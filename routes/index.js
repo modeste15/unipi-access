@@ -80,34 +80,37 @@ router.post("/update-operator", async (req, res) => {
 
   const body = req.body;
 
-  if (body.old_password  !="" && body.new_password  !="") {
+  if (body.old_password ) {
 
     const admin = await User.findOne( { where: { login: 'admin'} });
     const validPassword = await bcrypt.compare(body.old_password, admin.password);
+
     if ( validPassword ) {
-        hash_admin = await bcrypt.hash(body.new_password , 10);
-        admin.update({
-          password: hash_admin
-        })
+        if (body.new_password && body.new_password !="" ) {
+
+          hash_admin = await bcrypt.hash(body.new_password , 10);
+          admin.update({
+            password: hash_admin
+          })
+
+        }  
+        
+        if (body.guest_new_password && body.guest_new_password !="" ) {
+
+          const guest = await User.findOne( { where: { login: 'guest'} });
+          hash_guest = await bcrypt.hash( body.guest_new_password, 10);
+          guest.update({
+            password: hash_guest
+          })
+
+        }
+
     } else {
-      res.status(400).json({ error: "Invalid Password" });
+      res.status(400).json({ error: "Admin Invalid Password" });
     }
   }
 
-  if (body.guest_old_password !="" && body.guest_old_password  !="") {
-
-    const guest = await User.findOne( { where: { login: 'guest'} });
-    const validPassword = await bcrypt.compare(body.guest_old_password, guest.password);
-    if ( validPassword ) {
-        hash_guest = await bcrypt.hash( body.guest_new_password, 10);
-        guest.update({
-          password: hash_guest
-        })
-    } else {
-      res.status(400).json({ error: "Invalid Password" });
-    }
-  }
-
+  res.status(201).json({message:"Successfully Updated"});
 
 
 });
@@ -188,6 +191,7 @@ router.get('/network', (req, res) => {
     ipserveur: config.Config.IPServeur,
     dns1: config.Config.dns1,
     dns2: config.Config.dns2,
+    key: config.key.key,
     user : user,
     admin : admin,
   });
@@ -228,7 +232,21 @@ router.get('/operator', (req, res) => {
 });
 
 router.get('/datetime', (req, res) => {
-  
+  var now = new Date();
+    var utcString = now.toISOString().substring(0,19);
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+    var day = now.getDate();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var localDatetime = year + "-" +
+                      (month < 10 ? "0" + month.toString() : month) + "-" +
+                      (day < 10 ? "0" + day.toString() : day) + "T" +
+                      (hour < 10 ? "0" + hour.toString() : hour) + ":" +
+                      (minute < 10 ? "0" + minute.toString() : minute) +
+                      utcString.substring(16,19);
+    
+
   user = req.session.user;
   admin = req.session.admin;
   var ntp = ini.parse(fs.readFileSync('/etc/systemd/timesyncd.conf', 'utf-8'))
@@ -244,7 +262,8 @@ router.get('/datetime', (req, res) => {
     user : user,
     admin : admin,
     date_status : config.Date.automatic,
-    ntp: ntplist
+    ntp: ntplist,
+    local: localDatetime
   });
   
 });
@@ -304,6 +323,7 @@ router.post("/update-network", function (req, res) {
       config.Config.IPServeur = body.server 
       config.Config.dns1 = body.dns1
       config.Config.dns2 = body.dns2  
+      config.key.key = body.key 
 
       var data = "# interfaces(5) file used by ifup(8) and ifdown(8)\n"+
       "# Please note that this file is written to be used with dhcpcd \n" +
@@ -328,7 +348,7 @@ router.post("/update-network", function (req, res) {
 
     fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
 
-    fs.writeFile( process.env.CONFIG_EVOK_FILE, data, (err) => {
+    fs.writeFile( process.env.CONFIG_NETWORK_FILE, data, (err) => {
       if (err)
         console.log(err);
     });

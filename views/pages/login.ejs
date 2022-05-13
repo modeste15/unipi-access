@@ -13,26 +13,30 @@
 
 
     <!-- OVERVIEW page -->
-    <div data-role="page" class="page" id="page-overview">
-        <div data-role="header"  class="cmax8" data-id="pageHeader" data-position="fixed">
-            <h2>Engenys Panel</h2>
-            <img src="/js/jquery/images/spinner.svg" class="ui-btn-right" id="unipi_loading_spinner" style="max-height: 80%;visibility: hidden;"/>
-        </div>
+    <div data-role="page" class="page columns" id="page-overview">
 
-        <div class="ui-content cmax8">
-            <form id="login-form" method="post">
-                <div>
-                    <label for="">Username</label>
-                    <input type="text" name="username" >
-                </div>
-                <div>
-                    <label for="">Password</label>
-                    <input type="password" name="password"   >
-                </div>
-                <div>
-                    <button type="submit"  class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Login</button>
-                </div>
-            </form>
+        <div class="ui-content column px-6  is-one-third is-offset-one-third  " >
+            <div class="card " style="margin-top:25%">
+                <h2 class="has-background-grey-lighter p-3 is-size-4 has-text-weight-bold has-text-centered">
+                    Engenys Panel
+                </h2>
+                <form id="login-form" class="m-2 pb-4" method="post">
+
+                    <div>
+                        <label for="">Username</label>
+                        <input type="text" name="username" >
+                    </div>
+                    <div>
+                        <label for="">Password</label>
+                        <input type="password" name="password"   >
+                    </div>
+                    <div>
+                        <button type="submit"  class="ui-link ui-btn ui-btn-a ui-tabs-anchor ui-btn-active">Login</button>
+                    </div>
+                </form>
+            </div>
+            
+            
         </div>
         
 
