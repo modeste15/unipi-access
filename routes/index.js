@@ -118,7 +118,7 @@ router.post("/update-operator", async (req, res) => {
 router.post("/reload-network", async (req, res) => {
 
   
-  exec("echo '"+ process.env.ADMIN +"' | sudo systemctl stop NetworkManager.service", (error, stdout, stderr) => {
+  exec("echo '"+ process.env.ADMIN +"' | sudo systemctl restart NetworkManager.service", (error, stdout, stderr) => {
     
     if (error) {
         console.log(`error: ${error.message}`);
@@ -191,7 +191,6 @@ router.get('/network', (req, res) => {
     ipserveur: config.Config.IPServeur,
     dns1: config.Config.dns1,
     dns2: config.Config.dns2,
-    key: config.key.key,
     user : user,
     admin : admin,
   });
@@ -213,6 +212,18 @@ router.get('/reader', (req, res) => {
     type_b : config.Readerb.type,
     first_character_b : config.Readerb.firstCharacter,
     read_character_b : config.Readerb.nbReadCharacter,
+    
+    port_a : config.SerA.port,
+    baudrate_a : config.SerA.baudrate,
+    timeout_a : config.SerA.timeout,
+    parity_a : config.SerA.parity,
+    stopbits_a : config.SerA.stopbits,
+
+    port_b : config.SerB.port,
+    baudrate_b : config.SerB.baudrate,
+    timeout_b : config.SerB.timeout,
+    parity_b : config.SerB.parity,
+    stopbits_b : config.SerB.stopbits,
   });
   
 });
@@ -366,10 +377,28 @@ router.post("/update-reader", async (req, res) => {
   config.Readera.firstCharacter = body.first_character_a
   config.Readera.nbReadCharacter = body.read_character_a 
 
+  //Reader A
+  console.log(body.port_a)
+
+  config.SerA.port = body.port_a
+  config.SerA.baudrate = body.baudrate_a
+  config.SerA.timeout = body.timeout_a 
+  config.SerA.parity = body.parity_a 
+  config.SerA.stopbits = body.stopbits_a
+
+
+
   config.Readerb.type = body.type_b
   config.Readerb.firstCharacter = body.first_character_b
   config.Readerb.nbReadCharacter = body.read_character_b 
+  //Reader B ser
+  config.SerB.port = (body.port_b).toString()
+  config.SerB.baudrate = body.baudrate_b
+  config.SerB.timeout = body.timeout_b 
+  config.SerB.parity = body.parity_b 
+  config.SerB.stopbits = body.stopbits_b
 
+  
   fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
 
   return res.redirect('/input')
