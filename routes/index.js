@@ -13,10 +13,11 @@ const { exec } = require("child_process");
 /**
  * Middleware to verify authentication
  */
+
 router.use(function (req, res, next) {
   user = req.session.user;
-  if( req.path != '/' && req.method=== 'GET'  && !user  ) {
-    res.redirect('/');
+  if( req.path != '/' && req.method === 'GET'  && !user  ) {
+    res.redirect('/'); 
   } else {
     next();
   }
@@ -118,7 +119,7 @@ router.post("/update-operator", async (req, res) => {
 router.post("/reload-network", async (req, res) => {
 
   
-  exec("echo '"+ process.env.ADMIN +"' | sudo systemctl restart NetworkManager.service", (error, stdout, stderr) => {
+  exec("echo '"+ process.env.ADMIN +"' | sudo reboot", (error, stdout, stderr) => {
     
     if (error) {
         console.log(`error: ${error.message}`);
@@ -180,17 +181,19 @@ router.get('/network', (req, res) => {
   
   user = req.session.user;
   admin = req.session.admin;
-  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
+  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
 
   
 
   res.render('pages/network',{
+    dhcp: config.Config.dhcp,
     hostname: config.Config.hostname,
     masque: config.Config.masque,
     passerelle: config.Config.passerelle,
     ipserveur: config.Config.IPServeur,
     dns1: config.Config.dns1,
     dns2: config.Config.dns2,
+    key: config.key.key,
     user : user,
     admin : admin,
   });
@@ -260,14 +263,14 @@ router.get('/datetime', (req, res) => {
 
   user = req.session.user;
   admin = req.session.admin;
-  var ntp = ini.parse(fs.readFileSync('/etc/systemd/timesyncd.conf', 'utf-8'))
-  var config = ini.parse(fs.readFileSync('./test.ini', 'utf-8'))
-  const ntplist = null;  
+  var ntp = ini.parse(fs.readFileSync('./timesyncd.conf', 'utf-8'))
+  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
+  var ntplist = null;  
+  
   if ( ntp.Time.FallbackNTP != null) {
-    const ntplist = ntp.Time.FallbackNTP.split(' ');
+    ntplist = ntp.Time.FallbackNTP.split(' ');
   } 
-  
-  
+
 
   res.render('pages/datetime',{
     user : user,
@@ -342,18 +345,17 @@ router.post("/update-network", function (req, res) {
       "# Include files from /etc/network/interfaces.d: \n" +
         "source-directory /etc/network/interfaces.d \n" +
         
-        "auto lo \n"+
-        "iface lo inet static \n" +
-	      "address " + body.hostname +"\n" + 
+        "auto eth0 \n"+
+        "iface eth0 inet static \n" +
+	      "\taddress " + body.hostname +"\n" + 
         "\tnetmask " + body.mask +"\n" +
         "\tgateway " + body.gateway +"\n"+
-        "\tdns-nameservers "+  body.dns1 + body.dns2;
+        "\tdns-nameservers "+  body.dns1+ " " + body.dns2+ "\n";
   
 
     } else {
       config.Config.dhcp = 1 ;
-      var data = "allow-hotplug eth0 \n"
-        "iface eth0 inet dhcp \n";
+      var data = "allow-hotplug eth0 \niface eth0 inet dhcp";
     }
 
 
@@ -407,6 +409,7 @@ router.post("/update-reader", async (req, res) => {
 router.post("/update-time", async (req, res) => {
   
   const body = req.body;
+  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE , 'utf-8'))
 
   //  If Request Automatic Checkbox is true 
   if( req.body.automatic ) {
@@ -448,6 +451,9 @@ router.post("/update-time", async (req, res) => {
       }
     });
 
+    config.Date.automatic = 1
+
+
   } else {
     var command = "echo '"+ process.env.ADMIN +"' | sudo -S sudo timedatectl set-ntp no"+
                   "&& sudo -S date -s '"+ body.time +"'"; 
@@ -462,8 +468,12 @@ router.post("/update-time", async (req, res) => {
           return;
       }
     });
+
+    config.Date.automatic = 0
+
   }
 
+  fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
   return res.redirect('/input')
 });
 

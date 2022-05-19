@@ -8,4 +8,4 @@ iface lo inet static
 address 192.168.1.41
 	netmask 255.255.255.0
 	gateway 192.168.1.20
-	dns-nameservers dns1 DNS2
+	dns-nameservers 8.8.8.9 8.8.8.8

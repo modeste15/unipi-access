@@ -165,13 +165,13 @@ $('#form-time').submit(function(event){
 
     // Callback handler that will be called on success
     request.done(function (response, textStatus, jqXHR){
-        top.location.href = '/';
+        location.reload();
+        //top.location.href = '/datetime';
     });
 
     // Callback handler that will be called on failure
     request.fail(function (jqXHR, textStatus, errorThrown){
         alert("Error");
-
     });
 
 

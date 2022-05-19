@@ -2,10 +2,6 @@ $.fn.exists = function () {
     return this.length !== 0;
 }
 
-
-
-
-
 $.postJSON = function(url, data, success, args) {
 	  args = $.extend({
 	    url: url,
@@ -39,7 +35,6 @@ function compare(a,b) {
 	  }
 	  return 0;
 }
-
 
 function sortResults(data) {
     return data.sort(compare);
