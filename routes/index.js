@@ -181,8 +181,11 @@ router.get('/network', (req, res) => {
   
   user = req.session.user;
   admin = req.session.admin;
+
+
   var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
 
+  console.log(config);
   
 
   res.render('pages/network',{
