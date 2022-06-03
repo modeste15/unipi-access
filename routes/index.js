@@ -10,8 +10,8 @@ var readline = require('readline');
 const { exec } = require("child_process");
 
 const ADMIN="admin"
-const CONFIG_NETWORK_FILE="/etc/network/interfaces/eth0"
-const CONFIG_EVOK_FILE= './setup.ini'
+const CONFIG_NETWORK_FILE="/etc/network/interfaces.d/eth0"
+const CONFIG_EVOK_FILE= '/var/engenys/setup.ini'
 const LOG_FILE= '/var/engenys/logs/raccess.log'
 
 /**
@@ -123,7 +123,7 @@ router.post("/update-operator", async (req, res) => {
 router.post("/reload-network", async (req, res) => {
 
   
-  exec("reboot", (error, stdout, stderr) => {
+  exec("echo '"+ SUDO +"' | sudo reboot", (error, stdout, stderr) => {
     
     if (error) {
         console.log(`error: ${error.message}`);
@@ -354,7 +354,7 @@ router.post("/update-network", function (req, res) {
       config.Config.passerelle = body.gateway 
       config.Config.dns1 = body.dns1
       config.Config.dns2 = body.dns2  
-      config.key.key = body.key 
+      config.Server.key = body.key 
 
       var data = "# interfaces(5) file used by ifup(8) and ifdown(8)\n"+
       "# Please note that this file is written to be used with dhcpcd \n" +
@@ -460,7 +460,7 @@ router.post("/update-time", async (req, res) => {
 
     fs.writeFileSync('./timesyncd.conf', ini.stringify(ntp))
 
-    exec("timedatectl set-ntp on", (error, stdout, stderr) => {
+    exec("sudo timedatectl set-ntp on", (error, stdout, stderr) => {
       if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -471,7 +471,7 @@ router.post("/update-time", async (req, res) => {
       }
     });
 
-    command = "timedatectl set-timezone '"+ body.timezone_offset +"'";
+    command = "sudo timedatectl set-timezone '"+ body.timezone_offset +"'";
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -489,8 +489,8 @@ router.post("/update-time", async (req, res) => {
 
 
   } else {
-    var command = " sudo timedatectl set-ntp no"+
-                  "&& date -s '"+ body.time +"'"; 
+    var command = "sudo -S sudo timedatectl set-ntp no"+
+                  "&& sudo -S date -s '"+ body.time +"'"; 
         
     exec(command , (error, stdout, stderr) => {
       if (error) {

@@ -3,9 +3,9 @@
 # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf' 
 # Include files from /etc/network/interfaces.d: 
 source-directory /etc/network/interfaces.d 
-auto lo 
-iface lo inet static 
-address 192.168.1.41
+auto eth0 
+iface eth0 inet static 
+	address 192.168.1.60
 	netmask 255.255.255.0
-	gateway 192.168.1.20
-	dns-nameservers 8.8.8.9 8.8.8.8
+	gateway 192.168.1.1
+	dns-nameservers 8.8.8.8 8.8.8.9

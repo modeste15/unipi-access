@@ -41,3 +41,7 @@ Suivre les etapes suivantes :
     npm start
     ```
 
+- Crontab :
+    ```shell
+    @reboot sleep 60 && cd /var/www/raccess/ && sudo node index
+    ```

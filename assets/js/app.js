@@ -42,7 +42,7 @@ $("#form-operator").submit(function(event){
 
     // Callback handler that will be called on success
     request.done(function (response, textStatus, jqXHR){
-        top.location.href = '/';
+        top.location.href = '/network';
     });
 
     // Callback handler that will be called on failure
@@ -78,8 +78,7 @@ $("#form-network").submit(function(event){
 
     // Callback handler that will be called on failure
     request.fail(function (jqXHR, textStatus, errorThrown){
-        alert("Error");
-
+        top.location.href = '/';
     });
 
 
