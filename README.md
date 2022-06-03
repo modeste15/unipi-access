@@ -41,6 +41,3 @@ Suivre les etapes suivantes :
     npm start
     ```
 
-
-
-

@@ -26,76 +26,98 @@
             
             <div id="networks" class="ui-content" data-inset="true">
                 <form  id="form-network" method="post">
-                    <div class="ui-field-contain">
-                        <label for="dhcp">DHCP</label>
-                        <input type="checkbox" name="dhcp" id="dhcp" checked=<%= (dhcp) ? 'false' : 'true' %> > 
+                    <div class="card p-3 my-2">
+                        <div class="ui-field-contain">
+                            <label for="dhcp">DHCP</label>
+                            <input type="checkbox" name="dhcp" id="dhcp" checked=<%= (dhcp) ? 'false' : 'true' %> > 
+                        </div>
+                        <div class="form-input">
+                            <div class="ui-field-contain ">
+                                <label  for="ip">Ip</label>
+                                <input  
+                                    type="text" 
+                                    name="hostname" 
+                                    pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
+                                    class="network-input"   
+                                    value="<%= (hostname) ? hostname : 'error' %>"
+                                >
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="mask">Mask</label>
+                                <input 
+                                    type="text" 
+                                    name="mask"  
+                                    class="network-input" 
+                                    value="<%= (masque) ? masque : '' %>" 
+                                >  
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="gateway">Gateway</label>
+                                <input 
+                                    type="text" 
+                                    name="gateway"  
+                                    class="network-input" 
+                                    value="<%= (passerelle) ? passerelle : '' %>"
+                                >
+                            </div>
+
+                            <div class="ui-field-contain">
+                                <label for="dns1">DNS 1</label>
+                                <input 
+                                    type="text"  
+                                    name="dns1" 
+                                    class="network-input" 
+                                    value="<%= (dns1) ? dns1 : '' %>"
+                                >
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="dns2">DNS 2</label>
+                                <input 
+                                    type="text"  
+                                    name="dns2" 
+                                    class="network-input" 
+                                    value="<%= (dns2) ? dns2 : '' %>"
+                                >
+                            </div>
+
+                        </div>
+    
                     </div>
-                    <div class="form-input">
-                        <div class="ui-field-contain ">
-                            <label  for="ip">Ip</label>
-                            <input  
-                                type="text" 
-                                name="hostname" 
-                                pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
-                                class="network-input"   
-                                value="<%= (hostname) ? hostname : 'error' %>"
-                            >
-                        </div>
+                    <div class="card p-3 my-2">
+
                         <div class="ui-field-contain">
-                            <label for="mask">Mask</label>
+                            <label for="gateway">Site ID</label>
                             <input 
                                 type="text" 
-                                name="mask"  
-                                class="network-input" 
-                                value="<%= (masque) ? masque : '' %>" 
-                            >  
-                        </div>
-                        <div class="ui-field-contain">
-                            <label for="gateway">Gateway</label>
-                            <input 
-                                type="text" 
-                                name="gateway"  
-                                class="network-input" 
-                                value="<%= (passerelle) ? passerelle : '' %>"
+                                name="site_id"  
+                                class="" 
+                                value="<%= (site_id) ? site_id : '' %>"
                             >
                         </div>
+
+
                         <div class="ui-field-contain">
                             <label for="gateway">Ip Server</label>
                             <input 
                                 type="text" 
                                 name="server"  
-                                class="network-input" 
+                                class="" 
                                 value="<%= (ipserveur) ? ipserveur : '' %>"
                             >
                         </div>
-                        <div class="ui-field-contain">
-                            <label for="dns1">DNS 1</label>
-                            <input 
-                                type="text"  
-                                name="dns1" 
-                                class="network-input" 
-                                value="<%= (dns1) ? dns1 : '' %>"
-                            >
-                        </div>
-                        <div class="ui-field-contain">
-                            <label for="dns2">DNS 2</label>
-                            <input 
-                                type="text"  
-                                name="dns2" 
-                                class="network-input" 
-                                value="<%= (dns2) ? dns2 : '' %>"
-                            >
-                        </div>
+
+
                         <div class="ui-field-contain">
                             <label for="key">API KEY</label>
                             <input 
                                 type="password"  
                                 name="key" 
-                                class="network-input" 
+                                class="" 
                                 value="<%= (key) ? key : '' %>"
                             >
                         </div>
                     </div>
+
 
                     <div class="has-text-right">
                         <button id="reload-network"  class="button is-danger " style="width: auto !important;">Reload</button>
@@ -127,6 +149,7 @@
         
 
     </div>
+    <script rel="javascript" type="text/javascript" src="js/app.js"></script>
 
 
 </body>

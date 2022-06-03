@@ -9,6 +9,10 @@ var readline = require('readline');
 
 const { exec } = require("child_process");
 
+const ADMIN="admin"
+const CONFIG_NETWORK_FILE="/etc/network/interfaces/eth0"
+const CONFIG_EVOK_FILE= './setup.ini'
+const LOG_FILE= '/var/engenys/logs/raccess.log'
 
 /**
  * Middleware to verify authentication
@@ -30,7 +34,7 @@ router.get('/', async (req, res) => {
   req.session.destroy();
   const users =  await User.findAll();
   if (users.length == 0) {
-    hash_admin = await bcrypt.hash( process.env.ADMIN, 10);
+    hash_admin = await bcrypt.hash( ADMIN, 10);
     // Create Admin 
     await User.create({
       login: "admin",
@@ -61,7 +65,7 @@ router.post("/login", async (req, res) => {
     
     if (validPassword) {
       if (user.login == "admin") {
-        req.session.user = "Admin";
+        req.session.user = "admin";
         req.session.admin = true;
       } else {
         req.session.user = "guest";
@@ -119,7 +123,7 @@ router.post("/update-operator", async (req, res) => {
 router.post("/reload-network", async (req, res) => {
 
   
-  exec("echo '"+ process.env.ADMIN +"' | sudo reboot", (error, stdout, stderr) => {
+  exec("reboot", (error, stdout, stderr) => {
     
     if (error) {
         console.log(`error: ${error.message}`);
@@ -182,21 +186,18 @@ router.get('/network', (req, res) => {
   user = req.session.user;
   admin = req.session.admin;
 
-
-  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
-
-  console.log(config);
-  
+  var config = ini.parse(fs.readFileSync(CONFIG_EVOK_FILE, 'utf-8'))
 
   res.render('pages/network',{
     dhcp: config.Config.dhcp,
     hostname: config.Config.hostname,
     masque: config.Config.masque,
+    site_id: config.Server.site_id,
     passerelle: config.Config.passerelle,
-    ipserveur: config.Config.IPServeur,
+    ipserveur: config.Server.IPServeur,
     dns1: config.Config.dns1,
     dns2: config.Config.dns2,
-    key: config.key.key,
+    key: config.Server.key,
     user : user,
     admin : admin,
   });
@@ -207,7 +208,7 @@ router.get('/reader', (req, res) => {
   
   user = req.session.user;
   admin = req.session.admin;
-  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
+  var config = ini.parse(fs.readFileSync(CONFIG_EVOK_FILE, 'utf-8'))
 
   res.render('pages/reader',{
     user : user,
@@ -266,8 +267,24 @@ router.get('/datetime', (req, res) => {
 
   user = req.session.user;
   admin = req.session.admin;
+
+  // Create timesyncd.conf if it doesn't exist
+  if (!fs.existsSync('./timesyncd.conf')) {
+    exec("ln -s /etc/systemd/timesyncd.conf ./timesyncd.conf", (error, stdout, stderr) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+      }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+      }
+      console.log(`stdout: ${stdout}`);
+    });
+  } 
+
   var ntp = ini.parse(fs.readFileSync('./timesyncd.conf', 'utf-8'))
-  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
+  var config = ini.parse(fs.readFileSync(CONFIG_EVOK_FILE, 'utf-8'))
   var ntplist = null;  
   
   if ( ntp.Time.FallbackNTP != null) {
@@ -278,7 +295,7 @@ router.get('/datetime', (req, res) => {
   res.render('pages/datetime',{
     user : user,
     admin : admin,
-    date_status : config.Date.automatic,
+    date_status : 1,
     ntp: ntplist,
     local: localDatetime
   });
@@ -300,7 +317,7 @@ router.get('/log', (req, res) => {
   
   
   // Driver code
-  let log = readFileLines(process.env.LOG_FILE);
+  let log = readFileLines(LOG_FILE);
   
   
   res.render('pages/log',{
@@ -317,12 +334,10 @@ router.get('/device', (req, res) => {
   user = req.session.user;
   admin = req.session.admin;
 
-
   res.render('pages/device',{
     user : user,
     admin : admin
   });
-  
 });
 
 
@@ -330,14 +345,13 @@ router.post("/update-network", function (req, res) {
   
     const body = req.body;
   
-    var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE, 'utf-8'))
+    var config = ini.parse(fs.readFileSync(CONFIG_EVOK_FILE, 'utf-8'))
   
     if (!body.dhcp) {
       config.Config.dhcp = 0 
       config.Config.hostname = body.hostname
       config.Config.masque = body.mask
       config.Config.passerelle = body.gateway 
-      config.Config.IPServeur = body.server 
       config.Config.dns1 = body.dns1
       config.Config.dns2 = body.dns2  
       config.key.key = body.key 
@@ -361,10 +375,13 @@ router.post("/update-network", function (req, res) {
       var data = "allow-hotplug eth0 \niface eth0 inet dhcp";
     }
 
+    config.Server.IPServeur = body.server 
+    config.Server.key = body.key 
+    config.Server.site_id = body.site_id
 
-    fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
+    fs.writeFileSync(CONFIG_EVOK_FILE , ini.stringify(config))
 
-    fs.writeFile( process.env.CONFIG_NETWORK_FILE, data, (err) => {
+    fs.writeFile( CONFIG_NETWORK_FILE, data, (err) => {
       if (err)
         console.log(err);
     });
@@ -376,7 +393,7 @@ router.post("/update-network", function (req, res) {
 router.post("/update-reader", async (req, res) => {
   const body = req.body;
   
-  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE , 'utf-8'))
+  var config = ini.parse(fs.readFileSync(CONFIG_EVOK_FILE , 'utf-8'))
 
   config.Readera.type = body.type_a
   config.Readera.firstCharacter = body.first_character_a
@@ -404,7 +421,7 @@ router.post("/update-reader", async (req, res) => {
   config.SerB.stopbits = body.stopbits_b
 
   
-  fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
+  fs.writeFileSync(CONFIG_EVOK_FILE , ini.stringify(config))
 
   return res.redirect('/input')
 });
@@ -412,7 +429,7 @@ router.post("/update-reader", async (req, res) => {
 router.post("/update-time", async (req, res) => {
   
   const body = req.body;
-  var config = ini.parse(fs.readFileSync(process.env.CONFIG_EVOK_FILE , 'utf-8'))
+  var config = ini.parse(fs.readFileSync(CONFIG_EVOK_FILE , 'utf-8'))
 
   //  If Request Automatic Checkbox is true 
   if( req.body.automatic ) {
@@ -443,7 +460,7 @@ router.post("/update-time", async (req, res) => {
 
     fs.writeFileSync('./timesyncd.conf', ini.stringify(ntp))
 
-    exec("echo '"+ process.env.ADMIN +"' | sudo -S sudo timedatectl set-ntp on", (error, stdout, stderr) => {
+    exec("timedatectl set-ntp on", (error, stdout, stderr) => {
       if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -454,12 +471,26 @@ router.post("/update-time", async (req, res) => {
       }
     });
 
-    config.Date.automatic = 1
+    command = "timedatectl set-timezone '"+ body.timezone_offset +"'";
+
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+      }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+      }
+    });
+
+
+    //config.Date.automatic = 1
 
 
   } else {
-    var command = "echo '"+ process.env.ADMIN +"' | sudo -S sudo timedatectl set-ntp no"+
-                  "&& sudo -S date -s '"+ body.time +"'"; 
+    var command = " sudo timedatectl set-ntp no"+
+                  "&& date -s '"+ body.time +"'"; 
         
     exec(command , (error, stdout, stderr) => {
       if (error) {
@@ -472,17 +503,17 @@ router.post("/update-time", async (req, res) => {
       }
     });
 
-    config.Date.automatic = 0
+    //config.Date.automatic = 0
 
   }
 
-  fs.writeFileSync(process.env.CONFIG_EVOK_FILE , ini.stringify(config))
+  fs.writeFileSync(CONFIG_EVOK_FILE , ini.stringify(config))
   return res.redirect('/input')
 });
 
 router.post("/init", async (req, res) => {
 
-  hash_admin = await bcrypt.hash( process.env.ADMIN, 10);
+  hash_admin = await bcrypt.hash( ADMIN, 10);
   // Create Admin 
   await User.create({
     login: "admin",
